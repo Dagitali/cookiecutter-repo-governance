@@ -1,0 +1,7 @@
+{
+    "project_name": "My Project",
+    "project_slug": "{{ cookiecutter.project_name.lower().replace(' ', '-') }}",
+    "owner": "My Organization",
+    "support_email": "support@example.com",
+    "year": "2026"
+}
