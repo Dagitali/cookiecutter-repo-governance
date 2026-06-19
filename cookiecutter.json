@@ -27,6 +27,7 @@
     "GitHub",
     "GitLab"
   ],
+  "__change_request_name": "{% if cookiecutter.git_hosting_service == 'GitLab' %}merge request{% else %}pull request{% endif %}",
   "include_issue_templates": "{% if cookiecutter.git_hosting_service == 'GitHub' %}yes{% else %}no{% endif %}",
   "include_pull_request_template": "{% if cookiecutter.git_hosting_service == 'GitHub' %}yes{% else %}no{% endif %}",
   "include_release_docs": "yes",
