@@ -8,7 +8,7 @@
   - [`git`](#git)
   - [GitFlow](#gitflow)
   - [GitHub Flow](#github-flow)
-  - [{{ cookiecutter.git_hosting_service }}](#{{ cookiecutter.git_hosting_service.lower().replace(' ', '-') }})
+  - [{{ cookiecutter.git\_hosting\_service }}](#-cookiecuttergit_hosting_service-)
 - [Programming Languages](#programming-languages)
   - [Python](#python)
 - [Tools](#tools)
@@ -45,27 +45,27 @@
 
 ### `git`
 
-1. <https://fileinfo.com/extension/gitattributes>: `.gitattributes` file extension reference
-2. <https://git-scm.com>: `git`
-3. <https://git-scm.com/book>: Pro Git book
-4. <https://git-scm.com/book/en/v2/Getting-Started-First-Time-Git-Setup>: First-time Git setup
-5. <https://git-scm.com/docs>: `git` documentation
-6. <https://git-scm.com/docs/gitattributes>: `gitattributes` documentation
-7. <https://git-scm.com/docs/gitignore>: `gitignore` documentation
-8. <https://gitforwindows.org>: Git for Windows
-9. <https://github.com/git/git>: `git` source repository
-10. <https://gitignore.io>: `.gitignore` template generator
-11. <https://stackoverflow.com/questions/63241071/automate-git-merge-commit-message>: Automating Git merge commit messages
-12. <https://www.atlassian.com/git/tutorials/inspecting-a-repository/git-tag>: Git tag tutorial
-13. <https://www.atlassian.com/git/tutorials/setting-up-a-repository/git-config>: Git configuration tutorial
+1. <https://www.atlassian.com/git/tutorials/inspecting-a-repository/git-tag>: Git tag tutorial
+2. <https://www.atlassian.com/git/tutorials/setting-up-a-repository/git-config>: Git configuration tutorial
+3. <https://fileinfo.com/extension/gitattributes>: `.gitattributes` file extension reference
+4. <https://git-scm.com>: `git`
+5. <https://git-scm.com/book>: Pro Git book
+6. <https://git-scm.com/book/en/v2/Getting-Started-First-Time-Git-Setup>: First-time Git setup
+7. <https://git-scm.com/docs>: `git` documentation
+8. <https://git-scm.com/docs/gitattributes>: `gitattributes` documentation
+9. <https://git-scm.com/docs/gitignore>: `gitignore` documentation
+10. <https://gitforwindows.org>: Git for Windows
+11. <https://github.com/git/git>: `git` source repository
+12. <https://gitignore.io>: `.gitignore` template generator
+13. <https://stackoverflow.com/questions/63241071/automate-git-merge-commit-message>: Automating Git merge commit messages
 
 ### GitFlow
 
-1. <https://git-flow.readthedocs.io/en/latest/releases.html>: `git-flow` release command documentation
-2. <https://github.com/nvie/gitflow>: `gitflow` extension repository
-3. <https://gist.github.com/JamesMGreene/cdd0ac49f90c987e45ac>: GitFlow branch model summary
-4. <https://nvie.com/posts/a-successful-git-branching-model/>: A successful Git branching model
-5. <https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow>: Atlassian GitFlow workflow guide
+1. <https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow>: Atlassian GitFlow workflow guide
+2. <https://git-flow.readthedocs.io/en/latest/releases.html>: `git-flow` release command documentation
+3. <https://github.com/nvie/gitflow>: `gitflow` extension repository
+4. <https://gist.github.com/JamesMGreene/cdd0ac49f90c987e45ac>: GitFlow branch model summary
+5. <https://nvie.com/posts/a-successful-git-branching-model/>: A successful Git branching model
 
 ### GitHub Flow
 
@@ -120,12 +120,12 @@
 
 ### Continuous Integration and Delivery
 
-1. <https://docs.github.com/en/actions>: GitHub Actions documentation
-2. <https://en.wikipedia.org/wiki/CI/CD>: CI/CD
-3. <https://github.com/badges/shields>: Shields badge service repository
-4. <https://naereen.github.io/badges>: Markdown badge examples
-5. <https://shields.io/>: Shields.io
-6. <https://shields.io/category/version>: Shields.io version badges
+1. <https://github.com/badges/shields>: Shields badge service repository
+2. <https://docs.github.com/en/actions>: GitHub Actions documentation
+3. <https://naereen.github.io/badges>: Markdown badge examples
+4. <https://shields.io/>: Shields.io
+5. <https://shields.io/category/version>: Shields.io version badges
+6. <https://en.wikipedia.org/wiki/CI/CD>: CI/CD
 
 ### Licensing
 
@@ -134,8 +134,8 @@
 
 ### Logging
 
-1. <https://en.wikipedia.org/wiki/ISO_8601>: ISO 8601
-2. <https://www.scalyr.com/blog/log-formatting-best-practices-readable>: Log formatting best practices
+1. <https://www.scalyr.com/blog/log-formatting-best-practices-readable>: Log formatting best practices
+2. <https://en.wikipedia.org/wiki/ISO_8601>: ISO 8601
 
 ### Release Notes and Changelogs
 
@@ -144,9 +144,9 @@
 
 ### Security
 
-1. <https://docs.github.com/en/code-security/getting-started/adding-a-security-policy-to-your-repository>: GitHub security policy documentation
-2. <https://scorecard.dev/>: OpenSSF Scorecard
-3. <https://www.cisa.gov/resources-tools/resources/coordinated-vulnerability-disclosure-process>: Coordinated Vulnerability Disclosure
+1. <https://www.cisa.gov/resources-tools/resources/coordinated-vulnerability-disclosure-process>: Coordinated Vulnerability Disclosure
+2. <https://docs.github.com/en/code-security/getting-started/adding-a-security-policy-to-your-repository>: GitHub security policy documentation
+3. <https://scorecard.dev/>: OpenSSF Scorecard
 
 ### Versioning
 
