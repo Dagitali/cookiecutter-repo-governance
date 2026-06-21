@@ -49,8 +49,8 @@ def render_project_fixture(
         config_file.write_text(
             '\n'.join(
                 [
-                    f"cookiecutters_dir: {tmp_path / 'cookiecutters'}",
-                    f"replay_dir: {tmp_path / 'replay'}",
+                    f'cookiecutters_dir: {tmp_path / "cookiecutters"}',
+                    f'replay_dir: {tmp_path / "replay"}',
                 ],
             ),
             encoding='utf-8',
