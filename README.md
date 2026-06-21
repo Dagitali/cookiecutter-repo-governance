@@ -70,6 +70,7 @@ Host-specific templates are optionally generated:
 - `include_maintainer_runbooks`: defaults to `yes`
 - `include_references`: defaults to `yes`
 - `include_agents_md`: defaults to `yes`
+- `include_discussions_link`: defaults to `yes` for GitHub, otherwise `no`
 - `include_funding`: defaults to `yes` when GitHub and `sponsor_url` are set
 
 When a non-GitHub hosting service is selected, GitHub-specific templates are removed and the
@@ -94,7 +95,7 @@ cookiecutter .
 ## Development
 
 ```bash
-python -m pip install -e ".[test]"
+python -m pip install -e ".[dev]"
 pytest
 ```
 
