@@ -48,5 +48,6 @@
   "include_maintainer_runbooks": "yes",
   "include_references": "yes",
   "include_agents_md": "yes",
+  "include_discussions_link": "{% if cookiecutter.git_service == 'GitHub' %}yes{% else %}no{% endif %}",
   "include_funding": "{% if cookiecutter.git_service == 'GitHub' and cookiecutter.sponsor_url %}yes{% else %}no{% endif %}"
 }
