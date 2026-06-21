@@ -32,7 +32,7 @@ name = "cookiecutter-repo-governance"
 dynamic = ["version"]
 description = "Cookiecutter template for rendering project-tailored software repository governance files."
 readme = { file = "README.md", content-type = "text/markdown" }
-requires-python = ">=3.9"
+requires-python = ">=3.13"
 license = "MIT"
 license-files = ["LICENSE"]
 authors = [
