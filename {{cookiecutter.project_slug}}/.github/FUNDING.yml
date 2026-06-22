@@ -1,7 +1,7 @@
 # FUNDING.yml
 # {{ cookiecutter.project_name }}
 #
-# Copyright © 2026 Dagitali LLC. All rights reserved.
+# Copyright © {{ cookiecutter.__year }} {{ cookiecutter.owner }}. All rights reserved.
 #
 # GitHub Sponsors and funding-link configuration.
 #

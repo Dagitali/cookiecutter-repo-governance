@@ -62,6 +62,9 @@ body:
         - Contribution process
         - Release process
         - Security or support policy
+        - Configuration or settings
+        - Generated files or templates
+        - Hook or automation behavior
         - Automation or CI
         - Other
     validations:
