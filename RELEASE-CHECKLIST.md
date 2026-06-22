@@ -40,6 +40,13 @@ steps for repositories generated from this template.
 - [ ] Confirm rendered repository URLs, support contacts, security contacts, and branch names match
       the selected Cookiecutter inputs.
 
+Generated-output smoke commands:
+
+```bash
+cookiecutter . --no-input
+pytest tests/integration/test_i_cookiecutter_render.py
+```
+
 ## Documentation Checks
 
 - [ ] Confirm root community-health files do not contain Cookiecutter template variables.
@@ -82,8 +89,8 @@ Example:
 
 ```bash
 git fetch origin main
-git tag -a v0.3.0 origin/main -m "Release v0.3.0"
-git push origin v0.3.0
+git tag -a v1.2.6 origin/main -m "Release v1.2.6"
+git push origin v1.2.6
 ```
 
 ## Post-Release Checks
