@@ -29,11 +29,11 @@ body:
     attributes:
       label: Summary
       description: What failed, and what did you expect instead?
-      placeholder: A short description of the bug and expected behavior.
+      placeholder: A short description of the bug and the expected behavior.
     validations:
       required: true
   - type: textarea
-    id: reproduction
+    id: repro
     attributes:
       label: Reproduction
       description: Provide exact steps, commands, configuration, and/or sample inputs needed to reproduce the bug.
@@ -44,17 +44,42 @@ body:
     validations:
       required: true
   - type: textarea
-    id: output
+    id: logs
     attributes:
       label: Error output
       description: Paste any traceback, command output, logs, screenshots, or failing assertion.
       render: text
+    validations:
+      required: true
   - type: input
     id: version
     attributes:
       label: Version or commit
       description: Which release, tag, or commit shows the problem?
       placeholder: v1.2.3 or abc1234
+    validations:
+      required: true
+  - type: input
+    id: runtime-version
+    attributes:
+      label: Runtime or platform version
+      description: Output from the relevant runtime, platform, browser, or service version command.
+      placeholder: Python 3.13.2, Node 24.0.0, Chrome 142, etc.
+    validations:
+      required: true
+  - type: dropdown
+    id: setup-mode
+    attributes:
+      label: Setup mode
+      description: How did you install, configure, or run the project?
+      options:
+        - Latest tagged release
+        - Source checkout
+        - Editable or local development install
+        - Hosted service or deployed environment
+        - other
+    validations:
+      required: true
   - type: input
     id: environment
     attributes:
