@@ -26,5 +26,5 @@ pre-commit run --all-files
 
 ## Risks
 
-Call out migration concerns, breaking changes,(optional) dependency impacts, support-policy changes,
-or areas that still need follow-up.
+Call out migration concerns, breaking changes, (optional) dependency impacts, support-policy
+changes, or areas that still need follow-up.
