@@ -12,7 +12,7 @@
 # - Define the funding profiles GitHub uses to render the repository Sponsor
 #   button.
 # - Keep active funding links limited to profiles that exist and are intended
-#   for cookiecutter-repo-governance or Dagitali support.
+#   for project- or organization-level support.
 #
 # Maintainer Notes
 # - GitHub reads this file from the default branch only.

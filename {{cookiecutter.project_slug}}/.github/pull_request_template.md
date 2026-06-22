@@ -9,7 +9,7 @@ Describe the user-visible change and the reason for it.
 
 ## Checklist
 
-- [ ] I updated user-facing docs when behavior, flags, config, workflows, or examples changed.
+- [ ] I updated user-facing docs when behavior, config, workflows, or examples changed.
 - [ ] I added or updated tests or validation evidence for the changed behavior.
 - [ ] I ran the relevant local checks.
 - [ ] I noted any follow-up work or intentional limitations.
@@ -20,7 +20,6 @@ List the commands, checks, or manual validation you ran locally, for example:
 
 ```bash
 pytest
-ruff check hooks tests
 pre-commit run --all-files
 ```
 

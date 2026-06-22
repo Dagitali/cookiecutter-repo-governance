@@ -9,8 +9,8 @@
 # - Disable blank issues and direct users toward the supported support paths.
 #
 # Maintainer Notes
-# - Keep these links aligned with the repository's current Discussions and
-#   security-reporting surfaces.
+# - Keep these links aligned with the repository's current Discussions,
+#   support, and security-reporting surfaces.
 
 ---
 
@@ -23,7 +23,7 @@ contact_links:
 {% endif -%}
   - name: Support
     url: mailto:{{ cookiecutter.support_email }}
-    about: Use this contact path for support questions that are not reproducible bugs.
+    about: Use the support policy for support questions that are not reproducible bugs.
   - name: Security disclosures
     url: mailto:{{ cookiecutter.security_email }}
     about: Report security issues privately under the repository security policy.
