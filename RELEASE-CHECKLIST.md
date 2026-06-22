@@ -2,6 +2,9 @@
 
 Use this checklist when preparing a tagged cookiecutter-repo-governance release.
 
+The generated project release checklist is maintained separately in
+`{{cookiecutter.project_slug}}/RELEASE-CHECKLIST.md`.
+
 - [Scope](#scope)
 - [Pre-Release Checks](#pre-release-checks)
 - [Template Rendering Checks](#template-rendering-checks)
@@ -9,6 +12,7 @@ Use this checklist when preparing a tagged cookiecutter-repo-governance release.
 - [Release Preparation](#release-preparation)
 - [Tagging](#tagging)
 - [Post-Release Checks](#post-release-checks)
+- [Implemented Improvements](#implemented-improvements)
 
 ## Scope
 
@@ -79,6 +83,7 @@ pytest tests/integration/test_i_cookiecutter_render.py
 Recommended local commands:
 
 ```bash
+make release-check
 SKIP=no-commit-to-branch pre-commit run --all-files
 ruff check hooks tests
 pytest
@@ -112,3 +117,13 @@ git push origin v1.2.6
       applicable.
 - [ ] Confirm `main` has been synced back into `develop` after release or hotfix work.
 - [ ] Confirm follow-up maintenance issues are filed for deferred work.
+
+## Implemented Improvements
+
+- [x] Add automated checks for unresolved Cookiecutter or Jinja syntax in rendered Markdown.
+- [x] Add automated checks for generated local Markdown links.
+- [x] Add automated checks for host-specific rendered paths.
+- [x] Add independent optional-document render tests.
+- [x] Make generated release-note checklist guidance host-aware.
+- [x] Add a local `release-check` command target.
+- [x] Add regression coverage for GitHub release-note categories.
