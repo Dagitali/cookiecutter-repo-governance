@@ -7,7 +7,6 @@ Shared fixtures and helpers for pytest-based unit tests.
 from __future__ import annotations
 
 import importlib.util
-from collections.abc import Callable
 from pathlib import Path
 from types import ModuleType
 
@@ -28,30 +27,6 @@ POST_GEN_PROJECT_PATH = PROJECT_ROOT / 'hooks' / 'post_gen_project.py'
 
 
 # SECTION: FIXTURES ========================================================= #
-
-
-@pytest.fixture(name='path_factory')
-def path_factory_fixture(
-    tmp_path: Path,
-) -> Callable[[str, bool, bool], Path]:
-    """Create test files or directories under ``tmp_path``."""
-
-    def _make_path(
-        name: str,
-        *,
-        directory: bool = False,
-        populated: bool = False,
-    ) -> Path:
-        target = tmp_path / name
-        if directory:
-            target.mkdir()
-            if populated:
-                (target / 'nested.txt').write_text('content', encoding='utf-8')
-        else:
-            target.write_text('content', encoding='utf-8')
-        return target
-
-    return _make_path
 
 
 @pytest.fixture(name='post_gen_project_module')
