@@ -71,7 +71,9 @@ pytest
 - [ ] Check out the authoritative release commit on `main`.
 - [ ] Create an annotated SemVer tag.
 - [ ] Push the tag to GitHub.
-- [ ] Draft or publish the GitHub Release from the pushed tag.
+- [ ] Confirm pushing the `v*.*.*` tag triggers `.github/workflows/cd.yml`.
+- [ ] Confirm `.github/workflows/cd.yml` publishes the GitHub Release automatically from the pushed
+      tag.
 
 Example:
 
@@ -83,6 +85,7 @@ git push origin v0.3.0
 
 ## Post-Release Checks
 
+- [ ] Confirm the `.github/workflows/cd.yml` `Publish GitHub release` job completed successfully.
 - [ ] Confirm the GitHub Release exists and has accurate release notes.
 - [ ] Confirm release notes call out breaking changes, deprecations, and upgrade notes when
       applicable.
