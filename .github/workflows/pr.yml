@@ -6,15 +6,17 @@
 # GitHub Actions workflow for required pull-request (PR) gates.
 #
 # Responsibilities
-# - Run the required pull-request and merge-queue GitFlow target-branch gate.
+# - Run required pull-request and merge-queue branch-policy gates for GitFlow
+#   target branches.
 # - Run the lightweight branch-policy baseline on GitFlow branches so working-
 #   branch pushes get fast remote feedback before a PR is opened.
 #
 # Maintainer Notes
 # - Global permissions are intentionally omitted; each job declares the minimum
 #   permissions it needs.
-# - External GitHub Actions are not needed here because this workflow uses only
-#   shell logic and GitHub-provided event context.
+# - External GitHub Actions are not used here because this workflow relies only
+#   on shell logic and GitHub-provided event context; pin any future external
+#   actions to full commit SHAs to reduce supply-chain risk.
 # - Heavier protected-branch validation lives in `ci.yml`; keep this workflow
 #   focused on the faster required baseline used by branch protection.
 # - The dynamic run name is part of the workflow contract: it should identify
