@@ -10,9 +10,7 @@ integration branches when {{ cookiecutter.project_name }} is operated with {{ co
 - [Shared Protection Baseline](#shared-protection-baseline)
   - [Branch Protections](#branch-protections)
 - [Default Branch](#default-branch)
-{% if cookiecutter.branch_model == "GitFlow" -%}
 - [Development Branch](#development-branch)
-{% endif -%}
 - [How To Disallow Direct Pushes](#how-to-disallow-direct-pushes)
 - [How To Update Required Checks](#how-to-update-required-checks)
 - [Maintenance Notes](#maintenance-notes)
@@ -70,6 +68,7 @@ Apply this baseline to protected branches:
 - Require conversation resolution before merging
 - Require status checks to pass before merging
 - Require branches to be up to date before merging
+- If merge queue is enabled, keep workflow triggers aligned so the same checks run for queued merges
 - Block force pushes
 - Block branch deletion
 - Keep bypass actors empty if possible
@@ -92,6 +91,7 @@ Recommended additions:
 - Require at least one approval
 - Require Code Owners review when sensitive paths exist
 - Consider requiring signed commits
+- Consider requiring merge queue when concurrent release updates are common
 - Require release-oriented checks for release and hotfix work
 
 {% if cookiecutter.branch_model == "GitFlow" -%}
@@ -104,6 +104,7 @@ Recommended additions:
 - Require at least one approval
 - Require the normal {{ cookiecutter.__change_request_name }} validation workflow
 - Require Code Owners review for sensitive paths when practical
+- Consider requiring merge queue when concurrent integration work makes merge-order conflicts common
 - Reserve direct pushes for documented emergency procedures only
 
 {% endif -%}
