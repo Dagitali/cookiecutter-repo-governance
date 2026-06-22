@@ -13,7 +13,13 @@ import pytest
 
 # pylint: disable=import-outside-toplevel,protected-access,unused-argument
 
-# SECTION: TEST SUITES ====================================================== #
+# SECTION: TYPE ALIASES ===================================================== #
+
+
+type RenderProject = Callable[..., Path]
+
+
+# SECTION: TESTS ============================================================ #
 
 
 class TestCookiecutterContext:
@@ -86,7 +92,7 @@ class TestGitHostingServiceRendering:
     )
     def test_github_issue_config_discussions_link_is_optional(
         self,
-        render_project: Callable[..., Path],
+        render_project: RenderProject,
         include_discussions_link: str,
         expected_text: str,
         missing_text: str,
@@ -106,13 +112,11 @@ class TestGitHostingServiceRendering:
 
     def test_github_license_uses_current_year(
         self,
-        render_project: Callable[..., Path],
+        render_project: RenderProject,
     ) -> None:
         project = render_project(git_service='GitHub')
 
-        assert f"Copyright {datetime.now().year}" in (
-            project / 'LICENSE'
-        ).read_text(
+        assert f'Copyright {datetime.now().year}' in (project / 'LICENSE').read_text(
             encoding='utf-8',
         )
 
@@ -187,7 +191,7 @@ class TestGitHostingServiceRendering:
     )
     def test_host_specific_templates_are_rendered(
         self,
-        render_project: Callable[..., Path],
+        render_project: RenderProject,
         git_service: str,
         extra_context: dict[str, str],
         expected_paths: list[str],
@@ -232,7 +236,7 @@ class TestGitHostingServiceRendering:
     )
     def test_repo_url_is_derived_from_hosting_context(
         self,
-        render_project: Callable[..., Path],
+        render_project: RenderProject,
         git_service: str,
         expected_url: str,
     ) -> None:
@@ -282,7 +286,7 @@ class TestBranchModelRendering:
     )
     def test_contributing_workflow_matches_branch_model(
         self,
-        render_project: Callable[..., Path],
+        render_project: RenderProject,
         branch_model: str,
         expected_texts: list[str],
         missing_texts: list[str],
@@ -292,8 +296,7 @@ class TestBranchModelRendering:
         contributing = (project / 'CONTRIBUTING.md').read_text(encoding='utf-8')
 
         assert (
-            '- [Protected-Branch Workflow](#protected-branch-workflow)'
-            in contributing
+            '- [Protected-Branch Workflow](#protected-branch-workflow)' in contributing
         )
         assert '## Protected-Branch Workflow' in contributing
         for expected_text in expected_texts:
@@ -301,29 +304,18 @@ class TestBranchModelRendering:
         for missing_text in missing_texts:
             assert missing_text not in contributing
         assert (
-            ('### Recommended Branch Mapping' in contributing)
-            is expects_branch_mapping
-        )
+            '### Recommended Branch Mapping' in contributing
+        ) is expects_branch_mapping
 
 
 class TestOptionalDocuments:
     """Integration test suite for optional generated documents."""
 
-    @pytest.mark.parametrize(
-        'missing_path',
-        [
-            'RELEASE-POLICY.md',
-            'RELEASE-CHECKLIST.md',
-            'REFERENCES.md',
-            'AGENTS.md',
-            '.github/MAINTAINER-RUNBOOKS.md',
-        ],
-    )
     def test_optional_documents_can_be_removed(
         self,
-        render_project: Callable[..., Path],
-        missing_path: str,
+        render_project: RenderProject,
     ) -> None:
+        """Test that optional generated documents can be removed."""
         project = render_project(
             git_service='GitHub',
             include_release_docs='no',
@@ -333,7 +325,14 @@ class TestOptionalDocuments:
             include_agents_md='no',
         )
 
-        assert not (project / missing_path).exists()
+        for missing_path in [
+            'RELEASE-POLICY.md',
+            'RELEASE-CHECKLIST.md',
+            'REFERENCES.md',
+            'AGENTS.md',
+            '.github/MAINTAINER-RUNBOOKS.md',
+        ]:
+            assert not (project / missing_path).exists()
 
 
 class TestGeneratedDocumentLinks:
@@ -350,7 +349,7 @@ class TestGeneratedDocumentLinks:
     )
     def test_contributing_avoids_unrendered_operational_links(
         self,
-        render_project: Callable[..., Path],
+        render_project: RenderProject,
         git_service: str,
     ) -> None:
         """Test that CONTRIBUTING avoids known links to unrendered files."""
@@ -365,25 +364,20 @@ class TestGeneratedDocumentLinks:
             assert '.github/MAINTAINER-RUNBOOKS.md' not in contributing
             assert '.github/BRANCH-PROTECTION.md' not in contributing
 
-    @pytest.mark.parametrize(
-        ('link_label', 'link_target'),
-        [
-            ('CONTRIBUTING.md', 'CONTRIBUTING.md'),
-            ('SECURITY.md', 'SECURITY.md'),
-            ('SUPPORT.md', 'SUPPORT.md'),
-        ],
-    )
     def test_readme_reference_links_are_valid(
         self,
-        render_project: Callable[..., Path],
-        link_label: str,
-        link_target: str,
+        render_project: RenderProject,
     ) -> None:
         """Test that README reference links render as valid Markdown."""
         project = render_project(git_service='GitHub')
         readme = (project / 'README.md').read_text(encoding='utf-8')
 
-        assert f'[{link_label}]: {link_target}' in readme
-        assert f'[{link_label}]:' in readme
-        assert f'[{link_label}] {link_target}' not in readme
-        assert f'[{link_label}]: {link_target}]' not in readme
+        for link_label, link_target in [
+            ('CONTRIBUTING.md', 'CONTRIBUTING.md'),
+            ('SECURITY.md', 'SECURITY.md'),
+            ('SUPPORT.md', 'SUPPORT.md'),
+        ]:
+            assert f'[{link_label}]: {link_target}' in readme
+            assert f'[{link_label}]:' in readme
+            assert f'[{link_label}] {link_target}' not in readme
+            assert f'[{link_label}]: {link_target}]' not in readme
