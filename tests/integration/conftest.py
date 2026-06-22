@@ -25,6 +25,15 @@ pytestmark = pytest.mark.integration
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
+BASE_RENDER_CONTEXT = {
+    'project_name': 'Example Project',
+    'project_slug': 'example-project',
+    'owner': 'Example Org',
+    'repo_namespace': 'example',
+    'support_email': 'support@example.com',
+    'security_email': 'security@example.com',
+    'conduct_email': 'conduct@example.com',
+}
 
 
 # SECTION: FIXTURES ========================================================= #
@@ -47,32 +56,17 @@ def render_project_fixture(
     def _render_project(**extra_context: str) -> Path:
         config_file = tmp_path / 'cookiecutter-config.yaml'
         config_file.write_text(
-            '\n'.join(
-                [
-                    f'cookiecutters_dir: {tmp_path / "cookiecutters"}',
-                    f'replay_dir: {tmp_path / "replay"}',
-                ],
-            ),
+            f'cookiecutters_dir: {tmp_path / "cookiecutters"}\n'
+            f'replay_dir: {tmp_path / "replay"}',
             encoding='utf-8',
         )
-
-        context = {
-            'project_name': 'Example Project',
-            'project_slug': 'example-project',
-            'owner': 'Example Org',
-            'repo_namespace': 'example',
-            'support_email': 'support@example.com',
-            'security_email': 'security@example.com',
-            'conduct_email': 'conduct@example.com',
-        }
-        context.update(extra_context)
 
         return Path(
             cookiecutter(
                 str(PROJECT_ROOT),
                 no_input=True,
                 output_dir=str(tmp_path),
-                extra_context=context,
+                extra_context=BASE_RENDER_CONTEXT | extra_context,
                 config_file=str(config_file),
             ),
         )
