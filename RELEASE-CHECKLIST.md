@@ -159,3 +159,14 @@ git push origin v1.2.6
 - [x] Consolidate repeated rendered-path assertions in integration tests.
 - [x] Parameterize root Markdown meta tests for per-file failure reporting.
 - [x] Collapse duplicated post-generation hook unit tests into truth-table cases.
+- [x] Consolidate repeated text-snippet assertions in integration tests.
+- [x] Parameterize branch-protection meta tests by workflow check source.
+- [x] Parameterize generated-path and reference-coverage meta checks.
+- [x] Add shared test helpers for repository paths, Cookiecutter config, Markdown links, and Markdown file discovery.
+- [x] Add shared root test fixtures for repository root and Cookiecutter configuration.
+- [x] Type-check the packaged test suite after adding shared test modules.
+- [x] Add a root pytest collection hook that marks tests by suite directory.
+- [x] Remove redundant subdirectory-level pytest marker declarations.
+- [x] Collapse Cookiecutter derived-prompt visibility checks into one truth-table test.
+- [x] Add a release-note configuration fixture for integration tests.
+- [x] Inline one-use README maintainer-doc helper in meta tests.
