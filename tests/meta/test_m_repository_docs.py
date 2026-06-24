@@ -6,12 +6,15 @@ Meta tests for repository documentation guardrails.
 
 from __future__ import annotations
 
-import json
 import re
 from collections.abc import Callable
 from pathlib import Path
 
 import pytest
+from tests.helpers import PROJECT_ROOT
+from tests.helpers import UNRESOLVED_TEMPLATE_PATTERNS
+from tests.helpers import load_cookiecutter_config
+from tests.helpers import local_markdown_links
 
 # SECTION: PRAGMAS ========================================================== #
 
@@ -20,10 +23,8 @@ import pytest
 # SECTION: CONSTANTS ======================================================== #
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
 TEMPLATE_ROOT = PROJECT_ROOT / '{{cookiecutter.project_slug}}'
 WORKFLOWS_ROOT = PROJECT_ROOT / '.github' / 'workflows'
-UNRESOLVED_TEMPLATE_PATTERNS = ('{{', '{%', '{#')
 
 
 # SECTION: INTERNAL FUNCTIONS =============================================== #
@@ -40,7 +41,7 @@ def _branch_protection_check_names() -> list[str]:
 def _ci_workflow_check_names() -> list[str]:
     """Return emitted check names from the CI workflow."""
     ci_workflow = (WORKFLOWS_ROOT / 'ci.yml').read_text(encoding='utf-8')
-    check_names = []
+    check_names: list[str] = []
 
     precommit_match = re.search(
         r'precommit:.*?^\s+name:\s+([^\n]+)$',
@@ -74,29 +75,10 @@ def _ci_workflow_check_names() -> list[str]:
     return check_names
 
 
-def _local_markdown_links(
-    markdown: str,
-) -> list[str]:
-    """Return local Markdown link targets from a Markdown document."""
-    links = []
-
-    inline_targets = re.findall(r'(?<!!)\[[^\]]+\]\(([^)]+)\)', markdown)
-    reference_targets = re.findall(r'(?m)^\[[^\]]+\]:\s+(\S+)', markdown)
-
-    for target in inline_targets + reference_targets:
-        if target.startswith(
-            ('http://', 'https://', 'mailto:', '#'),
-        ) or target.startswith('<http'):
-            continue
-        links.append(target.strip('<>'))
-
-    return links
-
-
 def _pr_workflow_check_names() -> list[str]:
     """Return emitted check names from the PR Gates workflow."""
     pr_workflow = (WORKFLOWS_ROOT / 'pr.yml').read_text(encoding='utf-8')
-    check_names = []
+    check_names: list[str] = []
     job_names = re.findall(
         r'^\s{2}[a-z][a-z0-9-]*:\n(?:.*?\n)*?^\s{4}name:\s+([^\n]+)$',
         pr_workflow,
@@ -125,9 +107,7 @@ def _pr_workflow_check_names() -> list[str]:
 
 def _public_cookiecutter_input_names() -> list[str]:
     """Return public Cookiecutter input names from cookiecutter.json."""
-    config = json.loads(
-        (PROJECT_ROOT / 'cookiecutter.json').read_text(encoding='utf-8'),
-    )
+    config = load_cookiecutter_config()
     return [input_name for input_name in config if not input_name.startswith('__')]
 
 
@@ -168,9 +148,7 @@ def _readme_maintainer_doc_entry(
 
 def _supported_git_services() -> list[str]:
     """Return public Git service options from cookiecutter.json."""
-    config = json.loads(
-        (PROJECT_ROOT / 'cookiecutter.json').read_text(encoding='utf-8'),
-    )
+    config = load_cookiecutter_config()
     return config['git_service']
 
 
@@ -361,7 +339,7 @@ class TestRootMarkdown:
         """Test that root local Markdown links resolve to repository files."""
         markdown = markdown_file.read_text(encoding='utf-8')
 
-        for link in _local_markdown_links(markdown):
+        for link in local_markdown_links(markdown):
             target = link.split('#', maxsplit=1)[0]
             if not target:
                 continue
