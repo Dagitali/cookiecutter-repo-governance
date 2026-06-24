@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 import re
+from collections.abc import Callable
 from pathlib import Path
 
 import pytest
@@ -30,9 +31,9 @@ UNRESOLVED_TEMPLATE_PATTERNS = ('{{', '{%', '{#')
 
 def _branch_protection_check_names() -> list[str]:
     """Return check names documented in branch protection guidance."""
-    branch_protection = (
-        PROJECT_ROOT / '.github' / 'BRANCH-PROTECTION.md'
-    ).read_text(encoding='utf-8')
+    branch_protection = (PROJECT_ROOT / '.github' / 'BRANCH-PROTECTION.md').read_text(
+        encoding='utf-8',
+    )
     return re.findall(r'`([^`]+)`', branch_protection)
 
 
@@ -227,6 +228,27 @@ def _workflow_map_required_check_names() -> list[str]:
 # SECTION: TESTS ============================================================ #
 
 
+class TestBranchProtectionDocs:
+    """Meta test suite for branch-protection documentation accuracy."""
+
+    @pytest.mark.parametrize(
+        'check_name_source',
+        [
+            _ci_workflow_check_names,
+            _pr_workflow_check_names,
+        ],
+    )
+    def test_branch_protection_documents_check_names(
+        self,
+        check_name_source: Callable[[], list[str]],
+    ) -> None:
+        """Test that branch protection documents current workflow check names."""
+        documented_names = _branch_protection_check_names()
+
+        for check_name in check_name_source():
+            assert check_name in documented_names
+
+
 class TestCiCdWorkflowMap:
     """Meta test suite for CI/CD workflow map accuracy."""
 
@@ -260,24 +282,6 @@ class TestCiCdWorkflowMap:
         assert documented_names == actual_names
 
 
-class TestBranchProtectionDocs:
-    """Meta test suite for branch-protection documentation accuracy."""
-
-    def test_branch_protection_documents_ci_check_names(self) -> None:
-        """Test that branch protection documents current CI check names."""
-        documented_names = _branch_protection_check_names()
-
-        for check_name in _ci_workflow_check_names():
-            assert check_name in documented_names
-
-    def test_branch_protection_documents_pr_gate_check_names(self) -> None:
-        """Test that branch protection documents current PR gate checks."""
-        documented_names = _branch_protection_check_names()
-
-        for check_name in _pr_workflow_check_names():
-            assert check_name in documented_names
-
-
 class TestReadmeGeneratedFileInventory:
     """Meta test suite for README generated-file inventory."""
 
@@ -285,12 +289,15 @@ class TestReadmeGeneratedFileInventory:
         """Test that README documents every template source file."""
         assert sorted(_readme_generated_paths()) == _template_file_paths()
 
-    def test_readme_generated_paths_exist_in_template_source(self) -> None:
+    @pytest.mark.parametrize('generated_path', _readme_generated_paths())
+    def test_readme_generated_paths_exist_in_template_source(
+        self,
+        generated_path: str,
+    ) -> None:
         """Test that README generated-file entries exist in the template."""
-        for generated_path in _readme_generated_paths():
-            assert (TEMPLATE_ROOT / generated_path).exists(), (
-                f'README.md documents missing generated file {generated_path}'
-            )
+        assert (TEMPLATE_ROOT / generated_path).exists(), (
+            f'README.md documents missing generated file {generated_path}'
+        )
 
 
 class TestReadmeInputs:
@@ -306,13 +313,16 @@ class TestReadmeInputs:
 class TestReferences:
     """Meta test suite for reference documentation coverage."""
 
-    def test_references_platforms_cover_supported_git_services(self) -> None:
+    @pytest.mark.parametrize('git_service', _supported_git_services())
+    def test_references_platforms_cover_supported_git_services(
+        self,
+        git_service: str,
+    ) -> None:
         """Test that REFERENCES includes every supported Git hosting service."""
         references = (PROJECT_ROOT / 'REFERENCES.md').read_text(encoding='utf-8')
+        heading = f'### {git_service}'
 
-        for git_service in _supported_git_services():
-            heading = f'### {git_service}'
-            assert heading in references
+        assert heading in references
 
 
 class TestRootMarkdown:
