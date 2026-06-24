@@ -156,3 +156,6 @@ git push origin v1.2.6
 - [x] Add automated checks that the CI/CD workflow map documents current PR and CI check names.
 - [x] Harmonize release workflow pinned-action wording with the shared security posture.
 - [x] Align the CI/CD workflow map release role with the shared tagged-release phrasing.
+- [x] Consolidate repeated rendered-path assertions in integration tests.
+- [x] Parameterize root Markdown meta tests for per-file failure reporting.
+- [x] Collapse duplicated post-generation hook unit tests into truth-table cases.
