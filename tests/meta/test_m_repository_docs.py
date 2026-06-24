@@ -92,13 +92,31 @@ def _local_markdown_links(
 def _pr_workflow_check_names() -> list[str]:
     """Return emitted check names from the PR Gates workflow."""
     pr_workflow = (WORKFLOWS_ROOT / 'pr.yml').read_text(encoding='utf-8')
-    pr_gate_match = re.search(
-        r'pr-target-guard:.*?^\s+name:\s+([^\n]+)$',
+    check_names = []
+    job_names = re.findall(
+        r'^\s{2}[a-z][a-z0-9-]*:\n(?:.*?\n)*?^\s{4}name:\s+([^\n]+)$',
         pr_workflow,
-        flags=re.MULTILINE | re.DOTALL,
+        flags=re.MULTILINE,
     )
-    assert pr_gate_match is not None
-    return [pr_gate_match.group(1).strip()]
+    matrix_section = pr_workflow.split('matrix:', maxsplit=1)[1].split(
+        'permissions:',
+        maxsplit=1,
+    )[0]
+    python_versions = re.findall(
+        r"'([^']+)'",
+        matrix_section,
+    )
+
+    for job_name in job_names:
+        if '${{ matrix.python-version }}' in job_name:
+            check_names.extend(
+                job_name.replace('${{ matrix.python-version }}', python_version)
+                for python_version in python_versions
+            )
+            continue
+        check_names.append(job_name.strip())
+
+    return check_names
 
 
 def _public_cookiecutter_input_names() -> list[str]:
