@@ -147,3 +147,5 @@ git push origin v1.2.6
 - [x] Update branch protection guidance for the expanded PR Gates check set.
 - [x] Update CI/CD workflow map for the expanded PR Gates responsibilities.
 - [x] Add a separate PR Gates meta-guardrail step and XML coverage output.
+- [x] Broaden the PR Gates meta-guardrail step to the full meta test suite.
+- [x] Normalize branch protection nested check-list indentation.
