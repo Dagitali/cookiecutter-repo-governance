@@ -143,5 +143,4 @@ git push origin v1.2.6
 - [x] Remove stale PR-gates advisory check examples from branch protection docs.
 - [x] Add automated checks that branch protection docs list current PR Gates and CI check names.
 - [x] Harmonize PR Gates workflow wording with the shared GitFlow workflow pattern.
-- [x] Further harmonize branch protection guidance with ETLPlus while preserving project-specific
-      check names.
+- [x] Align PR Gates external-action note with the shared pinned-action security posture.

@@ -199,7 +199,7 @@ In GitHub:
 
 ## How To Update Required Checks In GitHub
 
-After the workflow split and later `ci.yml` trigger updates, update the protected-branch
+After the workflow split and the later `ci.yml` trigger redesign, update the protected-branch
 protections in GitHub so the minimum required checks come from `pr.yml`, then add the heavier
 `ci.yml` checks if you want that extended pre-merge validation to be blocking on `main` and
 `develop`.
@@ -244,7 +244,7 @@ With that configuration in place:
   policy. When the support matrix changes, refresh the exact examples here and in the GitHub branch
   protection UI to match the emitted checks.
 - The heavier CI jobs now run on both `pull_request` and `merge_group` for `main` and `develop`, so
-  protected-branch required checks can stay aligned between normal pull-request merges and merge
+  protected-branch required checks can stay aligned between normal pull request merges and merge
   queue.
 - The PR-target guard intentionally enforces these GitFlow merge paths: `feature/* -> develop`,
   `release/* -> main`, and `hotfix/* -> main`.
