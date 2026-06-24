@@ -35,10 +35,33 @@ WORKFLOWS_ROOT = PROJECT_ROOT / '.github' / 'workflows'
 
 def _branch_protection_check_names() -> tuple[str, ...]:
     """Return check names documented in branch protection guidance."""
-    branch_protection = (PROJECT_ROOT / '.github' / 'BRANCH-PROTECTION.md').read_text(
+    return tuple(re.findall(r'`([^`]+)`', _branch_protection_text()))
+
+
+@cache
+def _branch_protection_text() -> str:
+    """Return branch-protection guidance text."""
+    return (PROJECT_ROOT / '.github' / 'BRANCH-PROTECTION.md').read_text(
         encoding='utf-8',
     )
-    return tuple(re.findall(r'`([^`]+)`', branch_protection))
+
+
+@cache
+def _readme_text() -> str:
+    """Return repository README text."""
+    return (PROJECT_ROOT / 'README.md').read_text(encoding='utf-8')
+
+
+@cache
+def _references_text() -> str:
+    """Return repository references text."""
+    return (PROJECT_ROOT / 'REFERENCES.md').read_text(encoding='utf-8')
+
+
+@cache
+def _workflow_map_text() -> str:
+    """Return CI/CD workflow-map text."""
+    return (PROJECT_ROOT / 'CI-CD-WORKFLOWS.md').read_text(encoding='utf-8')
 
 
 @cache
@@ -113,22 +136,28 @@ def _pr_workflow_check_names() -> tuple[str, ...]:
 @cache
 def _readme_generated_paths() -> tuple[str, ...]:
     """Return generated file paths documented in README.md."""
-    readme = (PROJECT_ROOT / 'README.md').read_text(encoding='utf-8')
-    section = readme.split('## Generated files', maxsplit=1)[1].split(
-        '## Inputs',
-        maxsplit=1,
-    )[0]
+    section = (
+        _readme_text()
+        .split('## Generated files', maxsplit=1)[1]
+        .split(
+            '## Inputs',
+            maxsplit=1,
+        )[0]
+    )
     return tuple(re.findall(r'`([^`]+)`', section))
 
 
 @cache
 def _readme_input_names() -> tuple[str, ...]:
     """Return Cookiecutter input names documented in README.md."""
-    readme = (PROJECT_ROOT / 'README.md').read_text(encoding='utf-8')
-    section = readme.split('## Inputs', maxsplit=1)[1].split(
-        '## Usage',
-        maxsplit=1,
-    )[0]
+    section = (
+        _readme_text()
+        .split('## Inputs', maxsplit=1)[1]
+        .split(
+            '## Usage',
+            maxsplit=1,
+        )[0]
+    )
     return tuple(re.findall(r'^- `([^`]+)`:', section, flags=re.MULTILINE))
 
 
@@ -137,11 +166,14 @@ def _readme_maintainer_doc_entry(
     link_target: str,
 ) -> str:
     """Return the README maintainer-doc bullet for a link target."""
-    readme = (PROJECT_ROOT / 'README.md').read_text(encoding='utf-8')
-    section = readme.split('### Maintainer Docs', maxsplit=1)[1].split(
-        '## License',
-        maxsplit=1,
-    )[0]
+    section = (
+        _readme_text()
+        .split('### Maintainer Docs', maxsplit=1)[1]
+        .split(
+            '## License',
+            maxsplit=1,
+        )[0]
+    )
     pattern = rf'(?ms)^- \[[^\]]+\]\({re.escape(link_target)}\):.*?(?=^- |\Z)'
     match = re.search(pattern, section)
     assert match is not None
@@ -159,35 +191,33 @@ def _repository_markdown_files() -> tuple[Path, ...]:
 @cache
 def _workflow_map_file_paths() -> tuple[Path, ...]:
     """Return workflow file paths documented in CI-CD-WORKFLOWS.md."""
-    workflow_map = (PROJECT_ROOT / 'CI-CD-WORKFLOWS.md').read_text(
-        encoding='utf-8',
-    )
     return tuple(
         PROJECT_ROOT / workflow_path
-        for workflow_path in re.findall(r'Workflow file: `([^`]+)`', workflow_map)
+        for workflow_path in re.findall(
+            r'Workflow file: `([^`]+)`',
+            _workflow_map_text(),
+        )
     )
 
 
 @cache
 def _workflow_map_overview_names() -> tuple[str, ...]:
     """Return workflow filenames documented in the workflow overview."""
-    workflow_map = (PROJECT_ROOT / 'CI-CD-WORKFLOWS.md').read_text(
-        encoding='utf-8',
+    section = (
+        _workflow_map_text()
+        .split('## Workflow Overview', maxsplit=1)[1]
+        .split(
+            '## PR Gates',
+            maxsplit=1,
+        )[0]
     )
-    section = workflow_map.split('## Workflow Overview', maxsplit=1)[1].split(
-        '## PR Gates',
-        maxsplit=1,
-    )[0]
     return tuple(re.findall(r'`([^`]+\.yml)`', section))
 
 
 @cache
 def _workflow_map_required_check_names() -> tuple[str, ...]:
     """Return check names documented in the CI/CD workflow map."""
-    workflow_map = (PROJECT_ROOT / 'CI-CD-WORKFLOWS.md').read_text(
-        encoding='utf-8',
-    )
-    section = workflow_map.split('## Required Checks', maxsplit=1)[1]
+    section = _workflow_map_text().split('## Required Checks', maxsplit=1)[1]
     return tuple(re.findall(r'`([^`]+)`', section))
 
 
@@ -298,10 +328,9 @@ class TestReferences:
         git_service: str,
     ) -> None:
         """Test that REFERENCES includes every supported Git hosting service."""
-        references = (PROJECT_ROOT / 'REFERENCES.md').read_text(encoding='utf-8')
         heading = f'### {git_service}'
 
-        assert heading in references
+        assert heading in _references_text()
 
 
 class TestRootMarkdown:
