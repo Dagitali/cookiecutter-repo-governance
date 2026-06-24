@@ -6,13 +6,11 @@ Shared fixtures and helpers for pytest-based integration tests.
 
 from __future__ import annotations
 
-import json
 from collections.abc import Callable
 from pathlib import Path
-from typing import Any
 
 import pytest
-from cookiecutter.main import cookiecutter
+from cookiecutter.main import cookiecutter  # type: ignore[import-untyped]
 
 # SECTION: MARKERS ========================================================== #
 
@@ -21,25 +19,12 @@ from cookiecutter.main import cookiecutter
 pytestmark = pytest.mark.integration
 
 
-# SECTION: CONSTANTS ======================================================== #
-
-
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-
-
 # SECTION: FIXTURES ========================================================= #
-
-
-@pytest.fixture(name='cookiecutter_config')
-def cookiecutter_config_fixture() -> dict[str, Any]:
-    """Load the template's Cookiecutter configuration."""
-    return json.loads(
-        (PROJECT_ROOT / 'cookiecutter.json').read_text(encoding='utf-8'),
-    )
 
 
 @pytest.fixture(name='render_project')
 def render_project_fixture(
+    project_root: Path,
     tmp_path: Path,
 ) -> Callable[..., Path]:
     """Create a callable that renders the template into a temp directory."""
@@ -69,7 +54,7 @@ def render_project_fixture(
 
         return Path(
             cookiecutter(
-                str(PROJECT_ROOT),
+                str(project_root),
                 no_input=True,
                 output_dir=str(tmp_path),
                 extra_context=context,
