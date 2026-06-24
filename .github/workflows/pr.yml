@@ -14,9 +14,9 @@
 # Maintainer Notes
 # - Global permissions are intentionally omitted; each job declares the minimum
 #   permissions it needs.
-# - External GitHub Actions are not used here because this workflow relies only
-#   on shell logic and GitHub-provided event context; pin any future external
-#   actions to full commit SHAs to reduce supply-chain risk.
+# - This workflow relies only on shell logic and GitHub-provided event context;
+#   pin any future external actions to full commit SHAs to
+#   reduce supply-chain risk.
 # - Heavier protected-branch validation lives in `ci.yml`; keep this workflow
 #   focused on the faster required baseline used by branch protection.
 # - The dynamic run name is part of the workflow contract: it should identify
