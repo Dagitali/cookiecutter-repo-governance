@@ -212,6 +212,15 @@ def _workflow_map_overview_names() -> list[str]:
     return re.findall(r'`([^`]+\.yml)`', section)
 
 
+def _workflow_map_required_check_names() -> list[str]:
+    """Return check names documented in the CI/CD workflow map."""
+    workflow_map = (PROJECT_ROOT / 'CI-CD-WORKFLOWS.md').read_text(
+        encoding='utf-8',
+    )
+    section = workflow_map.split('## Required Checks', maxsplit=1)[1]
+    return re.findall(r'`([^`]+)`', section)
+
+
 # SECTION: TESTS ============================================================ #
 
 
@@ -224,6 +233,14 @@ class TestCiCdWorkflowMap:
 
         for workflow_name in _workflow_map_overview_names():
             assert f'`{workflow_name}`' in readme_entry
+
+    def test_workflow_map_documents_required_and_advisory_check_names(self) -> None:
+        """Test that the CI/CD map documents current PR and CI check names."""
+        documented_names = _workflow_map_required_check_names()
+        expected_names = _pr_workflow_check_names() + _ci_workflow_check_names()
+
+        for check_name in expected_names:
+            assert check_name in documented_names
 
     def test_workflow_map_lists_all_github_actions_workflows(self) -> None:
         """Test that the CI/CD map covers every GitHub Actions workflow file."""
