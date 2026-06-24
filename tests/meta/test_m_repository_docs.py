@@ -13,6 +13,7 @@ from pathlib import Path
 import pytest
 
 from tests.pytest_helpers import PROJECT_ROOT
+from tests.pytest_helpers import SUPPORTED_GIT_SERVICES
 from tests.pytest_helpers import UNRESOLVED_TEMPLATE_PATTERNS
 from tests.pytest_helpers import load_cookiecutter_config
 from tests.pytest_helpers import local_markdown_links
@@ -106,12 +107,6 @@ def _pr_workflow_check_names() -> list[str]:
     return check_names
 
 
-def _public_cookiecutter_input_names() -> list[str]:
-    """Return public Cookiecutter input names from cookiecutter.json."""
-    config = load_cookiecutter_config()
-    return [input_name for input_name in config if not input_name.startswith('__')]
-
-
 def _readme_generated_paths() -> list[str]:
     """Return generated file paths documented in README.md."""
     readme = (PROJECT_ROOT / 'README.md').read_text(encoding='utf-8')
@@ -147,25 +142,10 @@ def _readme_maintainer_doc_entry(
     return match.group(0)
 
 
-def _supported_git_services() -> list[str]:
-    """Return public Git service options from cookiecutter.json."""
-    config = load_cookiecutter_config()
-    return config['git_service']
-
-
 def _repository_markdown_files() -> list[Path]:
     """Return root repository Markdown files outside the Cookiecutter template."""
     return sorted(PROJECT_ROOT.glob('*.md')) + sorted(
         (PROJECT_ROOT / '.github').glob('*.md'),
-    )
-
-
-def _template_file_paths() -> list[str]:
-    """Return file paths in the Cookiecutter template source."""
-    return sorted(
-        path.relative_to(TEMPLATE_ROOT).as_posix()
-        for path in TEMPLATE_ROOT.rglob('*')
-        if path.is_file()
     )
 
 
@@ -266,7 +246,13 @@ class TestReadmeGeneratedFileInventory:
 
     def test_readme_generated_paths_cover_template_source_files(self) -> None:
         """Test that README documents every template source file."""
-        assert sorted(_readme_generated_paths()) == _template_file_paths()
+        template_paths = sorted(
+            path.relative_to(TEMPLATE_ROOT).as_posix()
+            for path in TEMPLATE_ROOT.rglob('*')
+            if path.is_file()
+        )
+
+        assert sorted(_readme_generated_paths()) == template_paths
 
     @pytest.mark.parametrize('generated_path', _readme_generated_paths())
     def test_readme_generated_paths_exist_in_template_source(
@@ -284,15 +270,19 @@ class TestReadmeInputs:
 
     def test_readme_inputs_cover_public_cookiecutter_inputs(self) -> None:
         """Test that README documents every public Cookiecutter input."""
-        assert sorted(_readme_input_names()) == sorted(
-            _public_cookiecutter_input_names(),
-        )
+        public_inputs = [
+            input_name
+            for input_name in load_cookiecutter_config()
+            if not input_name.startswith('__')
+        ]
+
+        assert sorted(_readme_input_names()) == sorted(public_inputs)
 
 
 class TestReferences:
     """Meta test suite for reference documentation coverage."""
 
-    @pytest.mark.parametrize('git_service', _supported_git_services())
+    @pytest.mark.parametrize('git_service', SUPPORTED_GIT_SERVICES)
     def test_references_platforms_cover_supported_git_services(
         self,
         git_service: str,
