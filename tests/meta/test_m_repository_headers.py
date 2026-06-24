@@ -24,7 +24,7 @@ type MaintenanceFile = tuple[str, str]
 # SECTION: INTERNAL CONSTANTS =============================================== #
 
 
-_HEADER_SECTION_FILES = [
+_HEADER_SECTION_FILES = (
     '.coveragerc',
     '.editorconfig',
     '.flake8',
@@ -35,29 +35,29 @@ _HEADER_SECTION_FILES = [
     '.ruff.toml',
     'Makefile',
     'pytest.ini',
-]
+)
 
 _GITHUB_WORKFLOW_FILES = sorted(
     path.relative_to(PROJECT_ROOT).as_posix()
     for path in (PROJECT_ROOT / '.github' / 'workflows').glob('*.yml')
 )
 
-_SPECIAL_REFERENCE_FILES = [
+_SPECIAL_REFERENCE_FILES = (
     '.github/FUNDING.yml',
     '.github/release.yml',
-]
+)
 
-_MAINTENANCE_HEADER_FILES = [
+_MAINTENANCE_HEADER_FILES = (
     *_HEADER_SECTION_FILES,
     *_GITHUB_WORKFLOW_FILES,
     *_SPECIAL_REFERENCE_FILES,
-]
+)
 
-_REQUIRED_HEADER_SECTIONS = [
+_REQUIRED_HEADER_SECTIONS = (
     'Responsibilities',
     'Maintainer Notes',
     'References',
-]
+)
 
 _REFERENCE_LABEL_PATTERN = re.compile(
     r'^# - .+ '
