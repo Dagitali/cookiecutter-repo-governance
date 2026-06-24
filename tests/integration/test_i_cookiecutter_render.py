@@ -47,6 +47,20 @@ def _assert_paths(
         )
 
 
+def _assert_text(
+    text: str,
+    *,
+    contains: Iterable[str] = (),
+    omits: Iterable[str] = (),
+) -> None:
+    """Assert text includes or omits expected snippets."""
+    for expected_text in contains:
+        assert expected_text in text
+
+    for missing_text in omits:
+        assert missing_text not in text
+
+
 def _markdown_files(
     project: Path,
 ) -> list[Path]:
@@ -155,9 +169,11 @@ class TestGitHostingServiceRendering:
             project / '.github' / 'ISSUE_TEMPLATE' / 'config.yml'
         ).read_text(encoding='utf-8')
 
-        assert expected_text in issue_config
-        if missing_text:
-            assert missing_text not in issue_config
+        _assert_text(
+            issue_config,
+            contains=[expected_text],
+            omits=[missing_text] if missing_text else (),
+        )
 
     def test_github_license_uses_current_year(
         self,
@@ -296,8 +312,11 @@ class TestGitHostingServiceRendering:
             encoding='utf-8',
         )
 
-        assert expected_text in release_checklist
-        assert missing_text not in release_checklist
+        _assert_text(
+            release_checklist,
+            contains=[expected_text],
+            omits=[missing_text],
+        )
 
     @pytest.mark.parametrize(
         ('git_service', 'expected_url'),
@@ -385,10 +404,7 @@ class TestBranchModelRendering:
             '- [Protected-Branch Workflow](#protected-branch-workflow)' in contributing
         )
         assert '## Protected-Branch Workflow' in contributing
-        for expected_text in expected_texts:
-            assert expected_text in contributing
-        for missing_text in missing_texts:
-            assert missing_text not in contributing
+        _assert_text(contributing, contains=expected_texts, omits=missing_texts)
         assert (
             '### Recommended Branch Mapping' in contributing
         ) is expects_branch_mapping
@@ -421,8 +437,11 @@ class TestBranchModelRendering:
             encoding='utf-8',
         )
 
-        assert expected_text in release_checklist
-        assert missing_text not in release_checklist
+        _assert_text(
+            release_checklist,
+            contains=[expected_text],
+            omits=[missing_text],
+        )
 
 
 class TestOptionalDocuments:
@@ -524,13 +543,21 @@ class TestGeneratedDocumentLinks:
         project = render_project(git_service=git_service)
         contributing = (project / 'CONTRIBUTING.md').read_text(encoding='utf-8')
 
-        assert 'CI-CD-WORKFLOWS.md' not in contributing
-        assert '.github/workflows/pr.yml' not in contributing
-        assert 'python-project-lifecycle' not in contributing
+        omitted_links = [
+            'CI-CD-WORKFLOWS.md',
+            '.github/workflows/pr.yml',
+            'python-project-lifecycle',
+        ]
 
         if git_service != 'GitHub':
-            assert '.github/MAINTAINER-RUNBOOKS.md' not in contributing
-            assert '.github/BRANCH-PROTECTION.md' not in contributing
+            omitted_links.extend(
+                [
+                    '.github/MAINTAINER-RUNBOOKS.md',
+                    '.github/BRANCH-PROTECTION.md',
+                ],
+            )
+
+        _assert_text(contributing, omits=omitted_links)
 
     @pytest.mark.parametrize(
         'git_service',
