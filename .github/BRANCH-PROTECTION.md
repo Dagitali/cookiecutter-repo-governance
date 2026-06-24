@@ -34,9 +34,9 @@ authoritative enforcement layer in the current repository configuration.
 
 Choose the required-check baseline that matches how the repository accepts pull requests.
 
-Because `.github/workflows/ci.yml` uses a matrix for Python versions, GitHub exposes expanded
-matrix job names in the branch protection UI rather than the template names shown in the YAML.
-Select those expanded names when configuring required checks.
+Because GitHub Actions workflows can use matrices for Python versions and other dimensions, GitHub
+exposes expanded matrix job names in the branch protection UI rather than the template names shown
+in the YAML. Select those expanded names when configuring required checks.
 
 The current workflow model is staged rather than post-merge:
 
@@ -85,16 +85,14 @@ job name as the minimum required check:
 
 ### Current Advisory Examples
 
-In the current PR-gates workflow, those advisory categories resolve to:
-
-- `Lint on Python 3.14`
-- `Test on Python 3.14`
-
 In the current CI workflow, those advisory categories resolve to:
 
 - `Repository hygiene checks`
 - `Template validation on Python 3.13`
 - `Template validation on Python 3.14`
+
+The current PR-gates workflow does not emit separate advisory checks; advisory validation currently
+lives in `ci.yml`.
 
 If you want the heavier pre-merge workflow to block normal pull-request merges into `main` and
 `develop`, the natural next checks to add are:
@@ -146,7 +144,8 @@ Recommended baseline:
 
 - Require the full pull-request baseline from `pr.yml`.
 - Consider also requiring the heavier `ci.yml` jobs on `main` if you want release-oriented pull
-  requests into `main` to satisfy extended repository hygiene and template validation before merge.
+  requests into `main` to satisfy the extended repository hygiene and template validation before
+  merge.
 
 Optional hardening:
 
@@ -167,14 +166,14 @@ Branch-specific additions:
 Recommended baseline:
 
 - Require the full pull-request baseline from `pr.yml`.
-- Consider also requiring the heavier `ci.yml` jobs on `develop` if you want extended repository
-  hygiene and template validation to block feature integration into `develop`.
+- Consider also requiring the heavier `ci.yml` jobs on `develop` if you want the extended
+  repository hygiene and template validation to block feature integration into `develop`.
 
 Optional hardening:
 
-- Require Code Owners review for sensitive paths when practical
-- Require merge queue if `develop` receives enough concurrent pull requests to make merge-order
-  conflicts common
+- Require Code Owners review for sensitive paths
+- Require merge queue if `develop` receives enough concurrent pull request traffic to make
+  merge-order conflicts common
 
 ## How To Disallow Direct Pushes
 
@@ -200,15 +199,18 @@ In GitHub:
 
 ## How To Update Required Checks In GitHub
 
-After workflow job names change, update protected-branch rules so required checks match the current
-workflow job names.
+After the workflow split and later `ci.yml` trigger updates, update the protected-branch
+protections in GitHub so the minimum required checks come from `pr.yml`, then add the heavier
+`ci.yml` checks if you want that extended pre-merge validation to be blocking on `main` and
+`develop`.
 
 In GitHub:
 
 1. Open repository `Settings`.
 2. Open `Branches`.
 3. Open the branch protection rule for `main`.
-4. Under `Require status checks to pass`, remove stale check names.
+4. Under `Require status checks to pass`, remove any stale checks emitted by the heavier CI or old
+   workflow filenames.
 5. Add this minimum required check from `pr.yml`:
   - `Guard PR target branch`
 6. If you want the heavier pre-merge `ci.yml` workflow to block ordinary pull-request merges into
@@ -238,9 +240,9 @@ With that configuration in place:
   expansion. In this repository, that means branch protection should reference concrete names such
   as `Guard PR target branch` and `Template validation on Python 3.13`, not the template strings
   shown in the YAML.
-- Treat version-specific names in this document as current examples, not permanent policy. When the
-  support matrix changes, refresh the exact examples here and in the GitHub branch protection UI to
-  match the emitted checks.
+- Treat version-specific and OS-specific names in this document as current examples, not permanent
+  policy. When the support matrix changes, refresh the exact examples here and in the GitHub branch
+  protection UI to match the emitted checks.
 - The heavier CI jobs now run on both `pull_request` and `merge_group` for `main` and `develop`, so
   protected-branch required checks can stay aligned between normal pull-request merges and merge
   queue.

@@ -140,3 +140,8 @@ git push origin v1.2.6
 - [x] Add automated checks that REFERENCES covers every supported `git_service` option.
 - [x] Add automated checks that README documents every public Cookiecutter input.
 - [x] Add automated checks that README generated-file inventory covers every template source file.
+- [x] Remove stale PR-gates advisory check examples from branch protection docs.
+- [x] Add automated checks that branch protection docs list current PR Gates and CI check names.
+- [x] Harmonize PR Gates workflow wording with the shared GitFlow workflow pattern.
+- [x] Further harmonize branch protection guidance with ETLPlus while preserving project-specific
+      check names.
