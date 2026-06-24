@@ -12,13 +12,6 @@ from pathlib import Path
 import pytest
 from cookiecutter.main import cookiecutter  # type: ignore[import-untyped]
 
-# SECTION: MARKERS ========================================================== #
-
-
-# Directory-level marker for integration tests.
-pytestmark = pytest.mark.integration
-
-
 # SECTION: FIXTURES ========================================================= #
 
 
