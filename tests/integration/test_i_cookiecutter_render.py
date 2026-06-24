@@ -65,43 +65,28 @@ class TestCookiecutterContext:
     """Integration test suite for Cookiecutter context behavior."""
 
     @pytest.mark.parametrize(
-        'hidden_key',
+        ('prompt_key', 'expected_present'),
         [
-            '__change_request_name',
-            '__repo_base_urls',
-            '__repo_paths',
-            '__year',
+            ('__change_request_name', True),
+            ('__change_request_name_plural', False),
+            ('__repo_base_urls', True),
+            ('__repo_paths', True),
+            ('__year', True),
+            ('change_request_name', False),
+            ('change_request_name_plural', False),
+            ('repository_base_urls', False),
+            ('repository_paths', False),
+            ('year', False),
         ],
     )
-    def test_derived_variables_are_hidden_prompts(
+    def test_derived_variable_prompt_visibility(
         self,
         cookiecutter_config: dict[str, Any],
-        hidden_key: str,
+        prompt_key: str,
+        expected_present: bool,
     ) -> None:
-        """Test that derived variables are hidden Cookiecutter prompts."""
-        assert hidden_key in cookiecutter_config
-
-    @pytest.mark.parametrize(
-        'public_key',
-        [
-            'change_request_name',
-            'change_request_name_plural',
-            '__change_request_name_plural',
-            'repository_base_urls',
-            'repository_paths',
-            'year',
-        ],
-    )
-    def test_derived_variables_are_not_public_prompts(
-        self,
-        cookiecutter_config: dict[str, Any],
-        public_key: str,
-    ) -> None:
-        """
-        Test that derived variables are not public prompts in the Cookiecutter
-        configuration.
-        """
-        assert public_key not in cookiecutter_config
+        """Test that derived variable prompts expose only hidden inputs."""
+        assert (prompt_key in cookiecutter_config) is expected_present
 
     def test_github_is_default_hosting_service(
         self,
@@ -155,6 +140,7 @@ class TestGitHostingServiceRendering:
         self,
         render_project: Callable[..., Path],
     ) -> None:
+        """Test that the rendered GitHub license uses the current year."""
         project = render_project(git_service='GitHub')
 
         assert f'Copyright {datetime.now().year}' in (project / 'LICENSE').read_text(
