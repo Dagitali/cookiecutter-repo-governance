@@ -25,9 +25,6 @@ from tests.pytest_helpers import markdown_files
 
 # pylint: disable=import-outside-toplevel,protected-access,unused-argument
 
-# SECTION: CONSTANTS ======================================================== #
-
-
 # SECTION: INTERNAL FUNCTIONS =============================================== #
 
 
