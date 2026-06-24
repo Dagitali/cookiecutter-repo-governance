@@ -13,13 +13,19 @@ from types import ModuleType
 
 import pytest
 
+# SECTION: TYPES ============================================================ #
+
+
+type PathFactory = Callable[..., Path]
+
+
 # SECTION: FIXTURES ========================================================= #
 
 
 @pytest.fixture(name='path_factory')
 def path_factory_fixture(
     tmp_path: Path,
-) -> Callable[..., Path]:
+) -> PathFactory:
     """Create test files or directories under ``tmp_path``."""
 
     def _make_path(

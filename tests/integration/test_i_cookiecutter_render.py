@@ -24,6 +24,12 @@ from tests.pytest_helpers import markdown_files
 
 # pylint: disable=import-outside-toplevel,protected-access,unused-argument
 
+# SECTION: TYPE ALIASES ===================================================== #
+
+
+type RenderProject = Callable[..., Path]
+
+
 # SECTION: INTERNAL FUNCTIONS =============================================== #
 
 
@@ -115,7 +121,7 @@ class TestGitHostingServiceRendering:
     )
     def test_github_issue_config_discussions_link_is_optional(
         self,
-        render_project: Callable[..., Path],
+        render_project: RenderProject,
         include_discussions_link: str,
         expected_text: str,
         missing_text: str,
@@ -137,7 +143,7 @@ class TestGitHostingServiceRendering:
 
     def test_github_license_uses_current_year(
         self,
-        render_project: Callable[..., Path],
+        render_project: RenderProject,
     ) -> None:
         """Test that the rendered GitHub license uses the current year."""
         project = render_project(git_service='GitHub')
@@ -217,7 +223,7 @@ class TestGitHostingServiceRendering:
     )
     def test_host_specific_templates_are_rendered(
         self,
-        render_project: Callable[..., Path],
+        render_project: RenderProject,
         git_service: str,
         extra_context: dict[str, str],
         expected_paths: list[str],
@@ -262,7 +268,7 @@ class TestGitHostingServiceRendering:
     )
     def test_release_checklist_release_notes_match_host(
         self,
-        render_project: Callable[..., Path],
+        render_project: RenderProject,
         git_service: str,
         expected_text: str,
         missing_text: str,
@@ -302,7 +308,7 @@ class TestGitHostingServiceRendering:
     )
     def test_repo_url_is_derived_from_hosting_context(
         self,
-        render_project: Callable[..., Path],
+        render_project: RenderProject,
         git_service: str,
         expected_url: str,
     ) -> None:
@@ -352,7 +358,7 @@ class TestBranchModelRendering:
     )
     def test_contributing_workflow_matches_branch_model(
         self,
-        render_project: Callable[..., Path],
+        render_project: RenderProject,
         branch_model: str,
         expected_texts: list[str],
         missing_texts: list[str],
@@ -387,7 +393,7 @@ class TestBranchModelRendering:
     )
     def test_release_checklist_post_release_matches_branch_model(
         self,
-        render_project: Callable[..., Path],
+        render_project: RenderProject,
         branch_model: str,
         expected_text: str,
         missing_text: str,
@@ -475,7 +481,7 @@ class TestOptionalDocuments:
     )
     def test_optional_documents_can_be_removed(
         self,
-        render_project: Callable[..., Path],
+        render_project: RenderProject,
         extra_context: dict[str, str],
         missing_paths: list[str],
         expected_paths: list[str],
@@ -497,7 +503,7 @@ class TestGeneratedDocumentLinks:
     )
     def test_contributing_avoids_unrendered_operational_links(
         self,
-        render_project: Callable[..., Path],
+        render_project: RenderProject,
         git_service: str,
     ) -> None:
         """Test that CONTRIBUTING avoids known links to unrendered files."""
@@ -526,7 +532,7 @@ class TestGeneratedDocumentLinks:
     )
     def test_generated_markdown_links_point_to_existing_files(
         self,
-        render_project: Callable[..., Path],
+        render_project: RenderProject,
         git_service: str,
     ) -> None:
         """Test that generated local Markdown links resolve to rendered files."""
@@ -553,7 +559,7 @@ class TestGeneratedDocumentLinks:
     )
     def test_readme_reference_links_are_valid(
         self,
-        render_project: Callable[..., Path],
+        render_project: RenderProject,
         link_label: str,
         link_target: str,
     ) -> None:
@@ -632,7 +638,7 @@ class TestGeneratedOutputQuality:
     )
     def test_documented_host_specific_paths_match_rendered_output(
         self,
-        render_project: Callable[..., Path],
+        render_project: RenderProject,
         git_service: str,
         expected_paths: list[str],
         missing_paths: list[str],
@@ -648,7 +654,7 @@ class TestGeneratedOutputQuality:
     )
     def test_rendered_markdown_has_no_unresolved_template_syntax(
         self,
-        render_project: Callable[..., Path],
+        render_project: RenderProject,
         git_service: str,
     ) -> None:
         """Test that rendered Markdown contains no unresolved Jinja syntax."""

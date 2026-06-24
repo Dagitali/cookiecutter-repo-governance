@@ -15,6 +15,8 @@ from typing import Any
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
+TESTS_ROOT = PROJECT_ROOT / 'tests'
+
 UNRESOLVED_TEMPLATE_PATTERNS = ('{{', '{%', '{#')
 
 
