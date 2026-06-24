@@ -134,3 +134,7 @@ git push origin v1.2.6
 - [x] Make generated post-release checklist guidance branch-model-aware.
 - [x] Add a CI/CD workflow map for the template repository workflows.
 - [x] Add automated checks that the CI/CD workflow map lists every GitHub Actions workflow.
+- [x] Update README maintainer docs to name every workflow covered by the CI/CD workflow map.
+- [x] Add automated checks that README names every workflow from the CI/CD workflow map.
+- [x] Add Git hosting platform references for every supported `git_service` option.
+- [x] Add automated checks that REFERENCES covers every supported `git_service` option.

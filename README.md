@@ -113,8 +113,10 @@ pytest
 
 - [Release Policy And Versioning](RELEASE-POLICY.md): Release expectations, semantic-version-style
   rules, and deprecation posture
-- [CI/CD Workflow Map](CI-CD-WORKFLOWS.md): Explanation of `pr.yml`, `ci.yml`, and `cd.yml`
-- [Release Checklist And Stable-Line Maintenance](RELEASE-CHECKLIST.md): Release-readiness execution guidance and stable-line follow-up tracking
+- [CI/CD Workflow Map](CI-CD-WORKFLOWS.md): Explanation of `pr.yml`, `ci.yml`, `cd.yml`, and
+  `sbom.yml`
+- [Release Checklist And Stable-Line Maintenance](RELEASE-CHECKLIST.md): Release-readiness execution
+  guidance and stable-line follow-up tracking
 - [Maintainer Runbooks](.github/MAINTAINER-RUNBOOKS.md): Maintainer workflow guidance for protected
   branches and tag-driven releases
 
