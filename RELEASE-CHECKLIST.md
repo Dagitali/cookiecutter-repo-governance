@@ -154,3 +154,5 @@ git push origin v1.2.6
 - [x] Align the CI/CD workflow map required-check summary with branch protection guidance.
 - [x] Remove stale CI workflow lint-step TODO commentary.
 - [x] Add automated checks that the CI/CD workflow map documents current PR and CI check names.
+- [x] Harmonize release workflow pinned-action wording with the shared security posture.
+- [x] Align the CI/CD workflow map release role with the shared tagged-release phrasing.
