@@ -49,11 +49,7 @@ def _public_cookiecutter_input_names() -> list[str]:
     config = json.loads(
         (PROJECT_ROOT / 'cookiecutter.json').read_text(encoding='utf-8'),
     )
-    return [
-        input_name
-        for input_name in config
-        if not input_name.startswith('__')
-    ]
+    return [input_name for input_name in config if not input_name.startswith('__')]
 
 
 def _readme_generated_paths() -> list[str]:
