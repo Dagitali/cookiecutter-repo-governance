@@ -15,6 +15,14 @@ from cookiecutter.main import cookiecutter  # type: ignore[import-untyped]
 # SECTION: FIXTURES ========================================================= #
 
 
+@pytest.fixture(name='release_config')
+def release_config_fixture(
+    project_root: Path,
+) -> str:
+    """Return the GitHub release-note configuration text."""
+    return (project_root / '.github' / 'release.yml').read_text(encoding='utf-8')
+
+
 @pytest.fixture(name='render_project')
 def render_project_fixture(
     project_root: Path,
