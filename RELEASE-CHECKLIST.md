@@ -146,3 +146,4 @@ git push origin v1.2.6
 - [x] Align PR Gates external-action note with the shared pinned-action security posture.
 - [x] Update branch protection guidance for the expanded PR Gates check set.
 - [x] Update CI/CD workflow map for the expanded PR Gates responsibilities.
+- [x] Add a separate PR Gates meta-guardrail step and XML coverage output.
