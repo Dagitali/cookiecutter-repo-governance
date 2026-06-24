@@ -57,14 +57,22 @@ Use this baseline for protected-branch merge gates. It covers the checks that ru
 #### Policy Categories
 
 - GitFlow target-branch enforcement for pull requests
+- Linting on the primary supported Python line
+- Docstring linting on the primary supported Python line
+- Tests on the primary supported Python line
+- Type-checking on the primary supported Python line
 
-This category defines the minimum merge gate for protected branches.
+These categories define the minimum merge gate for protected branches.
 
 #### Current Resolved Check Names
 
 In the current PR-gates workflow, the baseline above resolves to:
 
 - `Guard PR target branch`
+- `Lint on Python 3.13`
+- `Test on Python 3.13`
+- `Doclint on Python 3.13`
+- `Type-check on Python 3.13`
 
 Additional CI jobs are still useful, and they can be made required for normal pull-request merges
 into `main` and `develop` if you want the heavier pre-merge workflow to block those merges.
@@ -75,20 +83,26 @@ When configuring `main` or `develop` branch protection rules in the GitHub UI, s
 job names as the minimum required checks:
 
 - `Guard PR target branch`
+- `Lint on Python 3.13`
+- `Test on Python 3.13`
+- `Doclint on Python 3.13`
+- `Type-check on Python 3.13`
 
 ### Advisory Categories
 
-- Pre-commit repository hygiene checks
-- Ruff linting for hooks and tests
-- Unit tests for post-generation hook helpers
-- Integration tests for rendered Cookiecutter output
+- Lint on additional supported Python lines
+- Tests on additional supported Python lines
+- Repository hygiene checks
+- Template validation on additional supported Python lines
 
 ### Current Advisory Examples
 
-In the current PR-gates workflow, those advisory categories do not resolve to separate checks;
-advisory validation currently lives in `ci.yml`.
+In the current PR-gates workflow, those advisory categories resolve to:
 
-In the current CI workflow, those advisory categories include:
+- `Lint on Python 3.14`
+- `Test on Python 3.14`
+
+In the current CI workflow, those advisory categories also include:
 
 - `Repository hygiene checks`
 - `Template validation on Python 3.13`
@@ -213,8 +227,12 @@ In GitHub:
    workflow filenames.
 5. Add these minimum required checks from `pr.yml`:
   - `Guard PR target branch`
+  - `Lint on Python 3.13`
+  - `Test on Python 3.13`
+  - `Doclint on Python 3.13`
+  - `Type-check on Python 3.13`
 6. If you want the heavier pre-merge `ci.yml` workflow to block ordinary pull-request merges into
-   `main` and `develop`, also add these checks:
+  `main` and `develop`, also add these checks:
   - `Repository hygiene checks`
   - `Template validation on Python 3.13`
   - `Template validation on Python 3.14`
@@ -238,8 +256,7 @@ With that configuration in place:
 
 - GitHub required checks are tied to the exact job names emitted by the workflows after matrix
   expansion. In this repository, that means branch protection should reference concrete names such
-  as `Guard PR target branch` and `Template validation on Python 3.13`, not the template strings
-  shown in the YAML.
+  as `Guard PR target branch` and `Lint on Python 3.13`, not the template strings shown in the YAML.
 - Treat version-specific and OS-specific names in this document as current examples, not permanent
   policy. When the support matrix changes, refresh the exact examples here and in the GitHub branch
   protection UI to match the emitted checks.
