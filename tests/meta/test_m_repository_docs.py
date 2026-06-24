@@ -18,6 +18,7 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 TEMPLATE_ROOT = PROJECT_ROOT / '{{cookiecutter.project_slug}}'
+WORKFLOWS_ROOT = PROJECT_ROOT / '.github' / 'workflows'
 
 
 # SECTION: INTERNAL FUNCTIONS =============================================== #
@@ -60,7 +61,51 @@ def _repository_markdown_files() -> list[Path]:
     )
 
 
+def _workflow_map_file_paths() -> list[Path]:
+    """Return workflow file paths documented in CI-CD-WORKFLOWS.md."""
+    workflow_map = (PROJECT_ROOT / 'CI-CD-WORKFLOWS.md').read_text(
+        encoding='utf-8',
+    )
+    return [
+        PROJECT_ROOT / workflow_path
+        for workflow_path in re.findall(
+            r'Workflow file: `([^`]+)`',
+            workflow_map,
+        )
+    ]
+
+
+def _workflow_map_overview_names() -> list[str]:
+    """Return workflow filenames documented in the workflow overview."""
+    workflow_map = (PROJECT_ROOT / 'CI-CD-WORKFLOWS.md').read_text(
+        encoding='utf-8',
+    )
+    section = workflow_map.split('## Workflow Overview', maxsplit=1)[1].split(
+        '## PR Gates',
+        maxsplit=1,
+    )[0]
+    return re.findall(r'`([^`]+\.yml)`', section)
+
+
 # SECTION: TESTS ============================================================ #
+
+
+class TestCiCdWorkflowMap:
+    """Meta test suite for CI/CD workflow map accuracy."""
+
+    def test_workflow_map_lists_all_github_actions_workflows(self) -> None:
+        """Test that the CI/CD map covers every GitHub Actions workflow file."""
+        actual_workflows = sorted(WORKFLOWS_ROOT.glob('*.yml'))
+        documented_workflows = sorted(_workflow_map_file_paths())
+
+        assert documented_workflows == actual_workflows
+
+    def test_workflow_overview_lists_all_github_actions_workflow_names(self) -> None:
+        """Test that the CI/CD overview names every workflow file."""
+        actual_names = sorted(path.name for path in WORKFLOWS_ROOT.glob('*.yml'))
+        documented_names = sorted(_workflow_map_overview_names())
+
+        assert documented_names == actual_names
 
 
 class TestRootMarkdown:
