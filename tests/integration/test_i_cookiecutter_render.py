@@ -7,46 +7,54 @@ template.
 
 from __future__ import annotations
 
-import re
 from collections.abc import Callable
+from collections.abc import Iterable
 from datetime import datetime
 from pathlib import Path
 from typing import Any
 
 import pytest
 
+from tests.pytest_helpers import SUPPORTED_GIT_SERVICES
+from tests.pytest_helpers import UNRESOLVED_TEMPLATE_PATTERNS
+from tests.pytest_helpers import local_markdown_links
+from tests.pytest_helpers import markdown_files
+
 # SECTION: PRAGMAS ========================================================== #
 
 # pylint: disable=import-outside-toplevel,protected-access,unused-argument
 
-# SECTION: CONSTANTS ======================================================== #
-
-
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-
-
 # SECTION: INTERNAL FUNCTIONS =============================================== #
 
 
-def _markdown_files(
+def _assert_paths(
     project: Path,
-) -> list[Path]:
-    """Return generated Markdown files below the rendered project."""
-    return sorted(project.rglob('*.md'))
+    *,
+    existing: Iterable[str] = (),
+    missing: Iterable[str] = (),
+) -> None:
+    """Assert rendered paths exist or are omitted under a project."""
+    for expected_path in existing:
+        assert (project / expected_path).exists(), f'{expected_path} was not rendered'
+
+    for missing_path in missing:
+        assert not (project / missing_path).exists(), (
+            f'{missing_path} should not have been rendered'
+        )
 
 
-def _local_markdown_links(
-    markdown: str,
-) -> list[str]:
-    """Return local Markdown link targets from a Markdown document."""
-    links = []
-    for target in re.findall(r'(?<!!)\[[^\]]+\]\(([^)]+)\)', markdown):
-        if target.startswith(
-            ('http://', 'https://', 'mailto:', '#'),
-        ) or target.startswith('<http'):
-            continue
-        links.append(target.strip('<>'))
-    return links
+def _assert_text(
+    text: str,
+    *,
+    contains: Iterable[str] = (),
+    omits: Iterable[str] = (),
+) -> None:
+    """Assert text includes or omits expected snippets."""
+    for expected_text in contains:
+        assert expected_text in text
+
+    for missing_text in omits:
+        assert missing_text not in text
 
 
 # SECTION: TESTS ============================================================ #
@@ -56,43 +64,28 @@ class TestCookiecutterContext:
     """Integration test suite for Cookiecutter context behavior."""
 
     @pytest.mark.parametrize(
-        'hidden_key',
+        ('prompt_key', 'expected_present'),
         [
-            '__change_request_name',
-            '__repo_base_urls',
-            '__repo_paths',
-            '__year',
+            ('__change_request_name', True),
+            ('__change_request_name_plural', False),
+            ('__repo_base_urls', True),
+            ('__repo_paths', True),
+            ('__year', True),
+            ('change_request_name', False),
+            ('change_request_name_plural', False),
+            ('repository_base_urls', False),
+            ('repository_paths', False),
+            ('year', False),
         ],
     )
-    def test_derived_variables_are_hidden_prompts(
+    def test_derived_variable_prompt_visibility(
         self,
         cookiecutter_config: dict[str, Any],
-        hidden_key: str,
+        prompt_key: str,
+        expected_present: bool,
     ) -> None:
-        """Test that derived variables are hidden Cookiecutter prompts."""
-        assert hidden_key in cookiecutter_config
-
-    @pytest.mark.parametrize(
-        'public_key',
-        [
-            'change_request_name',
-            'change_request_name_plural',
-            '__change_request_name_plural',
-            'repository_base_urls',
-            'repository_paths',
-            'year',
-        ],
-    )
-    def test_derived_variables_are_not_public_prompts(
-        self,
-        cookiecutter_config: dict[str, Any],
-        public_key: str,
-    ) -> None:
-        """
-        Test that derived variables are not public prompts in the Cookiecutter
-        configuration.
-        """
-        assert public_key not in cookiecutter_config
+        """Test that derived variable prompts expose only hidden inputs."""
+        assert (prompt_key in cookiecutter_config) is expected_present
 
     def test_github_is_default_hosting_service(
         self,
@@ -136,14 +129,17 @@ class TestGitHostingServiceRendering:
             project / '.github' / 'ISSUE_TEMPLATE' / 'config.yml'
         ).read_text(encoding='utf-8')
 
-        assert expected_text in issue_config
-        if missing_text:
-            assert missing_text not in issue_config
+        _assert_text(
+            issue_config,
+            contains=[expected_text],
+            omits=[missing_text] if missing_text else (),
+        )
 
     def test_github_license_uses_current_year(
         self,
         render_project: Callable[..., Path],
     ) -> None:
+        """Test that the rendered GitHub license uses the current year."""
         project = render_project(git_service='GitHub')
 
         assert f'Copyright {datetime.now().year}' in (project / 'LICENSE').read_text(
@@ -233,11 +229,7 @@ class TestGitHostingServiceRendering:
             **extra_context,
         )
 
-        for expected_path in expected_paths:
-            assert (project / expected_path).exists()
-
-        for missing_path in missing_paths:
-            assert not (project / missing_path).exists()
+        _assert_paths(project, existing=expected_paths, missing=missing_paths)
 
         assert expected_text in (project / 'CONTRIBUTING.md').read_text(
             encoding='utf-8',
@@ -281,8 +273,11 @@ class TestGitHostingServiceRendering:
             encoding='utf-8',
         )
 
-        assert expected_text in release_checklist
-        assert missing_text not in release_checklist
+        _assert_text(
+            release_checklist,
+            contains=[expected_text],
+            omits=[missing_text],
+        )
 
     @pytest.mark.parametrize(
         ('git_service', 'expected_url'),
@@ -370,10 +365,7 @@ class TestBranchModelRendering:
             '- [Protected-Branch Workflow](#protected-branch-workflow)' in contributing
         )
         assert '## Protected-Branch Workflow' in contributing
-        for expected_text in expected_texts:
-            assert expected_text in contributing
-        for missing_text in missing_texts:
-            assert missing_text not in contributing
+        _assert_text(contributing, contains=expected_texts, omits=missing_texts)
         assert (
             '### Recommended Branch Mapping' in contributing
         ) is expects_branch_mapping
@@ -406,8 +398,11 @@ class TestBranchModelRendering:
             encoding='utf-8',
         )
 
-        assert expected_text in release_checklist
-        assert missing_text not in release_checklist
+        _assert_text(
+            release_checklist,
+            contains=[expected_text],
+            omits=[missing_text],
+        )
 
 
 class TestOptionalDocuments:
@@ -490,11 +485,7 @@ class TestOptionalDocuments:
             **extra_context,
         )
 
-        for missing_path in missing_paths:
-            assert not (project / missing_path).exists()
-
-        for expected_path in expected_paths:
-            assert (project / expected_path).exists()
+        _assert_paths(project, existing=expected_paths, missing=missing_paths)
 
 
 class TestGeneratedDocumentLinks:
@@ -502,12 +493,7 @@ class TestGeneratedDocumentLinks:
 
     @pytest.mark.parametrize(
         'git_service',
-        [
-            'GitHub',
-            'GitLab',
-            'Bitbucket',
-            'Azure DevOps',
-        ],
+        SUPPORTED_GIT_SERVICES,
     )
     def test_contributing_avoids_unrendered_operational_links(
         self,
@@ -518,22 +504,25 @@ class TestGeneratedDocumentLinks:
         project = render_project(git_service=git_service)
         contributing = (project / 'CONTRIBUTING.md').read_text(encoding='utf-8')
 
-        assert 'CI-CD-WORKFLOWS.md' not in contributing
-        assert '.github/workflows/pr.yml' not in contributing
-        assert 'python-project-lifecycle' not in contributing
+        omitted_links = [
+            'CI-CD-WORKFLOWS.md',
+            '.github/workflows/pr.yml',
+            'python-project-lifecycle',
+        ]
 
         if git_service != 'GitHub':
-            assert '.github/MAINTAINER-RUNBOOKS.md' not in contributing
-            assert '.github/BRANCH-PROTECTION.md' not in contributing
+            omitted_links.extend(
+                [
+                    '.github/MAINTAINER-RUNBOOKS.md',
+                    '.github/BRANCH-PROTECTION.md',
+                ],
+            )
+
+        _assert_text(contributing, omits=omitted_links)
 
     @pytest.mark.parametrize(
         'git_service',
-        [
-            'GitHub',
-            'GitLab',
-            'Bitbucket',
-            'Azure DevOps',
-        ],
+        SUPPORTED_GIT_SERVICES,
     )
     def test_generated_markdown_links_point_to_existing_files(
         self,
@@ -543,9 +532,9 @@ class TestGeneratedDocumentLinks:
         """Test that generated local Markdown links resolve to rendered files."""
         project = render_project(git_service=git_service)
 
-        for markdown_file in _markdown_files(project):
+        for markdown_file in markdown_files(project):
             markdown = markdown_file.read_text(encoding='utf-8')
-            for link in _local_markdown_links(markdown):
+            for link in local_markdown_links(markdown):
                 target = link.split('#', maxsplit=1)[0]
                 if not target:
                     continue
@@ -651,20 +640,11 @@ class TestGeneratedOutputQuality:
         """Test that documented host-specific paths match rendered output."""
         project = render_project(git_service=git_service)
 
-        for expected_path in expected_paths:
-            assert (project / expected_path).exists()
-
-        for missing_path in missing_paths:
-            assert not (project / missing_path).exists()
+        _assert_paths(project, existing=expected_paths, missing=missing_paths)
 
     @pytest.mark.parametrize(
         'git_service',
-        [
-            'GitHub',
-            'GitLab',
-            'Bitbucket',
-            'Azure DevOps',
-        ],
+        SUPPORTED_GIT_SERVICES,
     )
     def test_rendered_markdown_has_no_unresolved_template_syntax(
         self,
@@ -673,11 +653,11 @@ class TestGeneratedOutputQuality:
     ) -> None:
         """Test that rendered Markdown contains no unresolved Jinja syntax."""
         project = render_project(git_service=git_service)
-        unresolved_patterns = ('{{', '{%', '{#')
-
-        for markdown_file in _markdown_files(project):
+        for markdown_file in markdown_files(project):
             markdown = markdown_file.read_text(encoding='utf-8')
-            assert not any(pattern in markdown for pattern in unresolved_patterns), (
+            assert not any(
+                pattern in markdown for pattern in UNRESOLVED_TEMPLATE_PATTERNS
+            ), (
                 f'{markdown_file.relative_to(project)} contains unresolved '
                 'Cookiecutter or Jinja syntax'
             )
@@ -698,14 +678,11 @@ class TestReleaseNotesConfiguration:
     )
     def test_release_notes_categories_include_expected_labels(
         self,
+        release_config: str,
         category: str,
         labels: list[str],
     ) -> None:
         """Test that release-note categories keep expected labels."""
-        release_config = (PROJECT_ROOT / '.github' / 'release.yml').read_text(
-            encoding='utf-8',
-        )
-
         assert f'title: {category}' in release_config
         for label in labels:
             assert f'- {label}' in release_config
@@ -719,11 +696,8 @@ class TestReleaseNotesConfiguration:
     )
     def test_release_notes_exclude_internal_labels(
         self,
+        release_config: str,
         label: str,
     ) -> None:
         """Test that release-note generation excludes internal labels."""
-        release_config = (PROJECT_ROOT / '.github' / 'release.yml').read_text(
-            encoding='utf-8',
-        )
-
         assert f'- {label}' in release_config
