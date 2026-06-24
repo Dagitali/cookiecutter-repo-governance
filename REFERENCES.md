@@ -7,7 +7,10 @@
   - [Markdown](#markdown)
   - [YAML](#yaml)
 - [Platforms](#platforms)
+  - [Azure DevOps](#azure-devops)
+  - [Bitbucket](#bitbucket)
   - [GitHub](#github)
+  - [GitLab](#gitlab)
 - [Programming Languages](#programming-languages)
   - [Python](#python)
 - [Tools](#tools)
@@ -54,6 +57,18 @@
 
 ## Platforms
 
+### Azure DevOps
+
+1. <https://learn.microsoft.com/en-us/azure/devops/>: Azure DevOps documentation
+2. <https://learn.microsoft.com/en-us/azure/devops/repos/git/about-git>: Azure Repos Git documentation
+3. <https://learn.microsoft.com/en-us/azure/devops/repos/git/pull-requests>: Azure Repos pull request documentation
+
+### Bitbucket
+
+1. <https://support.atlassian.com/bitbucket-cloud/>: Bitbucket Cloud documentation
+2. <https://support.atlassian.com/bitbucket-cloud/docs/branch-a-repository/>: Bitbucket branch documentation
+3. <https://support.atlassian.com/bitbucket-cloud/docs/create-a-pull-request/>: Bitbucket pull request documentation
+
 ### GitHub
 
 1. <https://docs.github.com/>: GitHub documentation
@@ -61,6 +76,12 @@
 3. <https://docs.github.com/en/communities/setting-up-your-project-for-healthy-contributions/creating-a-default-community-health-file>: GitHub community health files
 4. <https://docs.github.com/en/pull-requests>: GitHub pull requests
 5. <https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches>: GitHub branch protection rules
+
+### GitLab
+
+1. <https://docs.gitlab.com/>: GitLab documentation
+2. <https://docs.gitlab.com/user/project/merge_requests/>: GitLab merge request documentation
+3. <https://docs.gitlab.com/user/project/repository/branches/>: GitLab branch documentation
 
 ## Programming Languages
 

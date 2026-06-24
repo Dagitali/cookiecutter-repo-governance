@@ -6,6 +6,7 @@ Meta tests for repository documentation guardrails.
 
 from __future__ import annotations
 
+import json
 import re
 from pathlib import Path
 
@@ -34,10 +35,9 @@ def _local_markdown_links(
     reference_targets = re.findall(r'(?m)^\[[^\]]+\]:\s+(\S+)', markdown)
 
     for target in inline_targets + reference_targets:
-        if (
-            target.startswith(('http://', 'https://', 'mailto:', '#'))
-            or target.startswith('<http')
-        ):
+        if target.startswith(
+            ('http://', 'https://', 'mailto:', '#'),
+        ) or target.startswith('<http'):
             continue
         links.append(target.strip('<>'))
 
@@ -52,6 +52,29 @@ def _readme_generated_paths() -> list[str]:
         maxsplit=1,
     )[0]
     return re.findall(r'`([^`]+)`', section)
+
+
+def _readme_maintainer_doc_entry(
+    link_target: str,
+) -> str:
+    """Return the README maintainer-doc bullet for a link target."""
+    readme = (PROJECT_ROOT / 'README.md').read_text(encoding='utf-8')
+    section = readme.split('### Maintainer Docs', maxsplit=1)[1].split(
+        '## License',
+        maxsplit=1,
+    )[0]
+    pattern = rf'(?ms)^- \[[^\]]+\]\({re.escape(link_target)}\):.*?(?=^- |\Z)'
+    match = re.search(pattern, section)
+    assert match is not None
+    return match.group(0)
+
+
+def _supported_git_services() -> list[str]:
+    """Return public Git service options from cookiecutter.json."""
+    config = json.loads(
+        (PROJECT_ROOT / 'cookiecutter.json').read_text(encoding='utf-8'),
+    )
+    return config['git_service']
 
 
 def _repository_markdown_files() -> list[Path]:
@@ -93,6 +116,13 @@ def _workflow_map_overview_names() -> list[str]:
 class TestCiCdWorkflowMap:
     """Meta test suite for CI/CD workflow map accuracy."""
 
+    def test_readme_cicd_workflow_map_entry_names_all_workflows(self) -> None:
+        """Test that README summarizes every workflow covered by the CI/CD map."""
+        readme_entry = _readme_maintainer_doc_entry('CI-CD-WORKFLOWS.md')
+
+        for workflow_name in _workflow_map_overview_names():
+            assert f'`{workflow_name}`' in readme_entry
+
     def test_workflow_map_lists_all_github_actions_workflows(self) -> None:
         """Test that the CI/CD map covers every GitHub Actions workflow file."""
         actual_workflows = sorted(WORKFLOWS_ROOT.glob('*.yml'))
@@ -106,6 +136,29 @@ class TestCiCdWorkflowMap:
         documented_names = sorted(_workflow_map_overview_names())
 
         assert documented_names == actual_names
+
+
+class TestReadmeGeneratedFileInventory:
+    """Meta test suite for README generated-file inventory."""
+
+    def test_readme_generated_paths_exist_in_template_source(self) -> None:
+        """Test that README generated-file entries exist in the template."""
+        for generated_path in _readme_generated_paths():
+            assert (TEMPLATE_ROOT / generated_path).exists(), (
+                f'README.md documents missing generated file {generated_path}'
+            )
+
+
+class TestReferences:
+    """Meta test suite for reference documentation coverage."""
+
+    def test_references_platforms_cover_supported_git_services(self) -> None:
+        """Test that REFERENCES includes every supported Git hosting service."""
+        references = (PROJECT_ROOT / 'REFERENCES.md').read_text(encoding='utf-8')
+
+        for git_service in _supported_git_services():
+            heading = f'### {git_service}'
+            assert heading in references
 
 
 class TestRootMarkdown:
@@ -134,14 +187,3 @@ class TestRootMarkdown:
                     f'{markdown_file.relative_to(PROJECT_ROOT)} links to '
                     f'missing target {link}'
                 )
-
-
-class TestReadmeGeneratedFileInventory:
-    """Meta test suite for README generated-file inventory."""
-
-    def test_readme_generated_paths_exist_in_template_source(self) -> None:
-        """Test that README generated-file entries exist in the template."""
-        for generated_path in _readme_generated_paths():
-            assert (TEMPLATE_ROOT / generated_path).exists(), (
-                f'README.md documents missing generated file {generated_path}'
-            )
