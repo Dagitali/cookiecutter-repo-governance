@@ -18,7 +18,7 @@ from tests.pytest_helpers import TESTS_ROOT
 # SECTION: FIXTURES ========================================================= #
 
 
-@pytest.fixture(name='registered_markers')
+@pytest.fixture(name='registered_markers', scope='session')
 def registered_markers_fixture(
     pytestconfig: pytest.Config,
 ) -> set[str]:
