@@ -174,3 +174,8 @@ git push origin v1.2.6
 - [x] Add meta checks for repository-maintenance header conventions.
 - [x] Use pytest's parsed configuration fixture for marker-registration meta checks.
 - [x] Add Python 3.13 type aliases for repeated pytest fixture callable annotations.
+- [x] Convert repeated meta-test setup to shared pytest fixtures.
+- [x] Tighten meta-test fixture scope and static parameter immutability.
+- [x] Cache repository-doc metadata helpers and add stable workflow-source test IDs.
+- [x] Return immutable tuples from repository-doc metadata helpers.
+- [x] Centralize cached repository-document text reads in meta tests.
