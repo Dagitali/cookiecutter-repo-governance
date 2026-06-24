@@ -169,4 +169,8 @@ git push origin v1.2.6
 - [x] Remove redundant subdirectory-level pytest marker declarations.
 - [x] Collapse Cookiecutter derived-prompt visibility checks into one truth-table test.
 - [x] Add a release-note configuration fixture for integration tests.
-- [x] Inline one-use README maintainer-doc helper in meta tests.
+- [x] Add meta checks for test filename hygiene.
+- [x] Add meta checks that the root pytest marker hook covers active test-suite directories.
+- [x] Add meta checks for repository-maintenance header conventions.
+- [x] Use pytest's parsed configuration fixture for marker-registration meta checks.
+- [x] Add Python 3.13 type aliases for repeated pytest fixture callable annotations.
