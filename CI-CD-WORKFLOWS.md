@@ -44,7 +44,7 @@ Current responsibilities:
 - Enforce GitFlow pull-request target rules
 - Allow merge-queue events to inherit queued pull-request target validation
 - Run Ruff lint checks on the primary and next supported Python lines
-- Run tests on the primary and next supported Python lines
+- Run tests with coverage on the primary and next supported Python lines
 - Run docstring lint checks on the primary supported Python line
 - Run type checks for the post-generation hook module
 
