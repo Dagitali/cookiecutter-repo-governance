@@ -19,7 +19,7 @@ credential handling, or emergency operator procedures.
 
 ## Workflow Overview
 
-cookiecutter-repo-governance currently separates automation into fo4ur workflows:
+cookiecutter-repo-governance currently separates automation into 4 workflows:
 
 - `pr.yml` for required pull-request and merge-queue gates
 - `ci.yml` for heavier pre-merge validation on protected branches and merge queue
@@ -27,7 +27,8 @@ cookiecutter-repo-governance currently separates automation into fo4ur workflows
 - `sbom.yml` for advisory Software Bill of Materials generation
 
 This split keeps required PR checks fast enough to use as branch-protection gates while moving
-template validation, release publication, and supply-chain inspection into separate workflows.
+heavier validation and publication logic into a second stage that can still block protected-branch
+integration when desired.
 
 ## PR Gates
 
@@ -70,8 +71,7 @@ Current responsibilities:
 - Run integration and meta tests for rendered Cookiecutter output and repository documentation
 
 This workflow runs on pull requests into `main` and `develop`, on `merge_group` for those same
-protected branches, on pushes to supported GitFlow working branches, and manually via
-`workflow_dispatch`.
+protected branches, and manually via `workflow_dispatch`.
 
 ## Release
 
@@ -129,9 +129,18 @@ you want repository hygiene and rendered-template validation to block merges.
 At the time of writing, the expected required checks are:
 
 - `Guard PR target branch`
+- `Lint on Python 3.13`
+- `Test on Python 3.13`
+- `Doclint on Python 3.13`
+- `Type-check on Python 3.13`
 
-The natural next checks to require, if you want the heavier protected-branch gate to block merges on
-GitHub too, are:
+The additional advisory PR-gate checks are:
+
+- `Lint on Python 3.14`
+- `Test on Python 3.14`
+
+The natural next checks to require, if you also want the heavier protected-branch gate to block
+merges on GitHub, are:
 
 - `Repository hygiene checks`
 - `Template validation on Python 3.13`
