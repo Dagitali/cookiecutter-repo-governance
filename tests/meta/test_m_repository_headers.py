@@ -37,9 +37,11 @@ _HEADER_SECTION_FILES = (
     'pytest.ini',
 )
 
-_GITHUB_WORKFLOW_FILES = sorted(
-    path.relative_to(PROJECT_ROOT).as_posix()
-    for path in (PROJECT_ROOT / '.github' / 'workflows').glob('*.yml')
+_GITHUB_WORKFLOW_FILES = tuple(
+    sorted(
+        path.relative_to(PROJECT_ROOT).as_posix()
+        for path in (PROJECT_ROOT / '.github' / 'workflows').glob('*.yml')
+    ),
 )
 
 _SPECIAL_REFERENCE_FILES = (
