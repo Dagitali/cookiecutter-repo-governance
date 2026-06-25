@@ -96,6 +96,18 @@ endif
 TEST_MARK_EXPRESSION ?= not perf
 
 
+# SECTION: MACROS =========================================================== #
+
+
+define ECHO_INFO
+	printf "[info] %s\n" "$(1)"
+endef
+
+define ECHO_OK
+	printf "[ok] %s\n" "$(1)"
+endef
+
+
 # SECTION: PHONY TARGETS ==================================================== #
 
 
@@ -110,18 +122,21 @@ check-ci-local: release-check doclint typecheck ## Run the heavier opt-in local 
 
 .PHONY: clean
 clean: ## Remove local build, test, and cache artifacts
-	find . -name '__pycache__' -type d -prune -exec rm -rf {} + 2>/dev/null || true
-	find . -name '.pytest_cache' -type d -prune -exec rm -rf {} + 2>/dev/null || true
-	find . -name '.ruff_cache' -type d -prune -exec rm -rf {} + 2>/dev/null || true
-	rm -rf "$(PKG_DIR)/.mypy_cache" "$(PKG_DIR)/build" "$(PKG_DIR)/dist" "$(PKG_DIR)"/*.egg-info
+	@find . -name '__pycache__' -type d -prune -exec rm -rf {} + 2>/dev/null || true
+	@find . -name '.pytest_cache' -type d -prune -exec rm -rf {} + 2>/dev/null || true
+	@find . -name '.ruff_cache' -type d -prune -exec rm -rf {} + 2>/dev/null || true
+	@rm -rf "$(PKG_DIR)/.mypy_cache" "$(PKG_DIR)/build" "$(PKG_DIR)/dist" "$(PKG_DIR)"/*.egg-info
+	@$(call ECHO_OK,Cleaned artifacts)
 
 .PHONY: clean-venv
 clean-venv: ## Remove the local virtual environment
-	rm -rf "$(VENV_DIR)"
+	@rm -rf "$(VENV_DIR)"
+	@$(call ECHO_OK,Removed venv)
 
 .PHONY: dev
 dev: venv ## Install development dependencies into the local virtual environment
-	$(PIP) install -e "$(PKG_DIR)[dev]"
+	@$(PIP) install -e "$(PKG_DIR)[dev]"
+	@$(call ECHO_OK,Installed package + dev extras)
 
 .PHONY: doclint
 doclint: dev ## Run docstring linters
@@ -147,7 +162,8 @@ help: ## Show available targets
 
 .PHONY: install
 install: venv ## Install the package in editable mode
-	$(PIP) install -e "$(PKG_DIR)"
+	@$(PIP) install -e "$(PKG_DIR)"
+	@$(call ECHO_OK,Installed package editable)
 
 .PHONY: lint
 lint: dev ## Run Python lint and formatting-drift checks
@@ -189,6 +205,24 @@ typecheck: dev ## Type-check post-generation hooks
 	$(VENV_BIN)/mypy hooks
 
 .PHONY: venv
-venv: ## Create the local virtual environment
-	$(PY) -m venv "$(VENV_DIR)"
-	$(PIP) install --upgrade pip
+venv: ## Create the virtual environment at VENV_DIR
+	@if [ ! -d "$(VENV_DIR)" ]; then \
+		$(call ECHO_INFO,Creating venv with $(PY) at $(VENV_DIR)); \
+		$(PY) -m venv "$(VENV_DIR)"; \
+	else \
+		current="$$($(PYTHON) -V 2>/dev/null || true)"; \
+		current="$${current#Python }"; \
+		current="$${current%.*}"; \
+		requested="$$($(PY) -V)"; \
+		requested="$${requested#Python }"; \
+		requested="$${requested%.*}"; \
+		if [ "$$current" != "$$requested" ]; then \
+			$(call ECHO_INFO,Recreating $(VENV_DIR) for $(PY); was Python $$current); \
+			rm -rf "$(VENV_DIR)"; \
+			$(PY) -m venv "$(VENV_DIR)"; \
+		else \
+			$(call ECHO_INFO,Using existing venv: $(VENV_DIR)); \
+		fi; \
+	fi
+	@$(PIP) install --upgrade pip setuptools wheel >/dev/null
+	@$(call ECHO_OK,venv ready)
