@@ -85,6 +85,12 @@ else
 	PIP := $(VENV_BIN)/pip
 endif
 
+### Testing ###
+
+# Default test marker expression.
+# Override with: make test TEST_MARK_EXPRESSION="not perf and not slow"
+TEST_MARK_EXPRESSION ?= not perf
+
 
 # SECTION: PHONY TARGETS ==================================================== #
 
@@ -120,6 +126,17 @@ doclint: dev ## Run docstring linters
 		-print0 | xargs -0 $(VENV_BIN)/pydocstyle --add-ignore=D102,D401
 	$(VENV_BIN)/pydoclint --style numpy hooks tests
 
+.PHONY: fix
+fix: dev ## Auto-fix lint violations with Ruff
+	$(PYTHON) -m ruff check . --fix
+
+.PHONY: fmt
+fmt: fix ## Format Python files with autopep8 normalization
+	files="$$(git ls-files '*.py')" && \
+	if [ -n "$$files" ]; then \
+		$(PYTHON) -m autopep8 --in-place --max-line-length=$(PY_LINE_LENGTH) $$files; \
+	fi
+
 .PHONY: help
 help: ## Show available targets
 	@awk 'BEGIN {FS = ":.*## "} /^[a-zA-Z0-9_.-]+:.*## / {printf "%-16s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -136,7 +153,7 @@ lint: dev ## Run Python lint and formatting-drift checks
 release-check: ## Run release-readiness checks without creating a virtual environment
 	SKIP=no-commit-to-branch pre-commit run --all-files
 	ruff check .
-	pytest -q tests
+	pytest -q -m "$(TEST_MARK_EXPRESSION)" tests
 
 .PHONY: render
 render: dev ## Render a sample project into RENDER_OUTPUT_DIR
@@ -152,7 +169,7 @@ show-venv: ## Print venv and interpreter locations
 
 .PHONY: test
 test: dev ## Run pytest
-	$(PYTHON) -m pytest -q tests
+	$(PYTHON) -m pytest -q -m "$(TEST_MARK_EXPRESSION)" tests
 
 .PHONY: test-meta
 test-meta: dev ## Run repository meta guardrail tests
