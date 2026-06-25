@@ -7,29 +7,47 @@
 #
 # Responsibilities
 # - Provide concise entry points for installing development dependencies.
-# - Run the same lint and render-test checks used by CI.
+# - Run the same lint, test, and template-validation checks used by CI.
 # - Render a disposable sample project for manual inspection.
 # - Remove local Python and Cookiecutter build/test artifacts.
 #
 # Maintainer Notes
 # - Keep targets focused on template maintenance, not generated-project
 #   application behavior.
-# - Keep `check` aligned with `.github/workflows/ci.yml`.
+# - Keep target names and help text aligned with the supported contributor and
+#   CI workflows.
 # - Add new validation logic to pytest before adding broad shell checks here.
 #
 # References
 # - GNU Make documentation: https://www.gnu.org/software/make/manual/make.html
+# - GNU Make conventions reference: https://www.gnu.org/prep/standards/html_node/Makefile-Conventions.html
 # - Cookiecutter documentation: https://cookiecutter.readthedocs.io/
 
 
 # SECTION: VARIABLES ======================================================== #
 
 
+### Make ###
+
 .DEFAULT_GOAL := help
 
+### Cookiecutter ###
+
+RENDER_OUTPUT_DIR ?= /tmp/cookiecutter-repo-governance-render
+
+### Python ###
+
+# Python to bootstrap the venv. To override the interpreter, set PY on the CLI:
+#   make dev PY=python3.13
+#   make dev PY=python3.14
 PY ?= python3
+
 VENV_DIR ?= .venv
 
+# Python formatter width; keep aligned with .ruff.toml:line-length.
+PY_LINE_LENGTH ?= 88
+
+# Cross-platform venv bin paths
 ifeq ($(OS),Windows_NT)
 	VENV_BIN := $(VENV_DIR)/Scripts
 	PYTHON := $(VENV_BIN)/python.exe
@@ -37,8 +55,6 @@ else
 	VENV_BIN := $(VENV_DIR)/bin
 	PYTHON := $(VENV_BIN)/python
 endif
-
-RENDER_OUTPUT_DIR ?= /tmp/cookiecutter-repo-governance-render
 
 
 # SECTION: PHONY TARGETS ==================================================== #
@@ -67,14 +83,18 @@ help: ## Show available targets
 	@awk 'BEGIN {FS = ":.*## "} /^[a-zA-Z0-9_.-]+:.*## / {printf "%-16s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
 .PHONY: lint
-lint: dev ## Run Ruff checks for hooks and tests
-	$(PYTHON) -m ruff check hooks tests
+lint: dev ## Run Python lint and formatting-drift checks
+	$(PYTHON) -m ruff check .
+	files="$$(git ls-files '*.py')" && \
+	if [ -n "$$files" ]; then \
+		$(PYTHON) -m autopep8 --diff --exit-code --max-line-length=$(PY_LINE_LENGTH) $$files; \
+	fi
 
 .PHONY: release-check
 release-check: ## Run release-readiness checks without creating a virtual environment
 	SKIP=no-commit-to-branch pre-commit run --all-files
-	ruff check hooks tests
-	pytest
+	ruff check .
+	pytest -q tests
 
 .PHONY: render
 render: dev ## Render a sample project into RENDER_OUTPUT_DIR
@@ -83,7 +103,11 @@ render: dev ## Render a sample project into RENDER_OUTPUT_DIR
 
 .PHONY: test
 test: dev ## Run pytest
-	$(PYTHON) -m pytest
+	$(PYTHON) -m pytest -q tests
+
+.PHONY: test-meta
+test-meta: dev ## Run repository meta guardrail tests
+	$(PYTHON) -m pytest -q tests/meta
 
 .PHONY: venv
 venv: ## Create the local virtual environment
