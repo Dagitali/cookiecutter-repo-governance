@@ -90,7 +90,10 @@ endif
 
 
 .PHONY: check
-check: lint test ## Run the local CI-equivalent checks
+check: doclint lint typecheck test ## Run docstring lint, code lint, type-check, and tests
+
+.PHONY: check-pre-push
+check-pre-push: check ## Run the fast mandatory local pre-push guardrails
 
 .PHONY: clean
 clean: ## Remove local build, test, and cache artifacts
@@ -106,6 +109,13 @@ clean-venv: ## Remove the local virtual environment
 .PHONY: dev
 dev: venv ## Install development dependencies into the local virtual environment
 	$(PIP) install -e ".[dev]"
+
+.PHONY: doclint
+doclint: dev ## Run docstring linters
+	find hooks tests -type f -name '*.py' \
+		! -path '*/__pycache__/*' \
+		-print0 | xargs -0 $(VENV_BIN)/pydocstyle --add-ignore=D102,D401
+	$(VENV_BIN)/pydoclint --style numpy hooks tests
 
 .PHONY: help
 help: ## Show available targets
@@ -144,6 +154,10 @@ test: dev ## Run pytest
 .PHONY: test-meta
 test-meta: dev ## Run repository meta guardrail tests
 	$(PYTHON) -m pytest -q tests/meta
+
+.PHONY: typecheck
+typecheck: dev ## Type-check post-generation hooks
+	$(VENV_BIN)/mypy hooks
 
 .PHONY: venv
 venv: ## Create the local virtual environment
