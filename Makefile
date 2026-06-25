@@ -22,6 +22,24 @@
 # - GNU Make documentation: https://www.gnu.org/software/make/manual/make.html
 # - GNU Make conventions reference: https://www.gnu.org/prep/standards/html_node/Makefile-Conventions.html
 # - Cookiecutter documentation: https://cookiecutter.readthedocs.io/
+#
+# Common Flows
+#
+# 1) Create venv + install dev tooling and the template package (editable).
+# $ make dev
+#
+# 2) Run static checks and tests.
+# $ make check
+#
+# 3) Render a disposable sample project for inspection.
+# $ make render
+#
+# 4) Run the release-readiness command.
+# $ make release-check
+#
+# 5) Clean local artifacts or remove the venv.
+# $ make clean
+# $ make clean-venv
 
 
 # SECTION: VARIABLES ======================================================== #
