@@ -93,7 +93,10 @@ endif
 check: doclint lint typecheck test ## Run docstring lint, code lint, type-check, and tests
 
 .PHONY: check-pre-push
-check-pre-push: check ## Run the fast mandatory local pre-push guardrails
+check-pre-push: doclint lint typecheck test ## Run the fast mandatory local pre-push guardrails
+
+.PHONY: check-ci-local
+check-ci-local: release-check doclint typecheck ## Run the heavier opt-in local CI-parity workflow
 
 .PHONY: clean
 clean: ## Remove local build, test, and cache artifacts
