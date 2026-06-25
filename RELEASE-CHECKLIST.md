@@ -80,13 +80,18 @@ pytest tests/integration/test_i_cookiecutter_render.py
       migration notes are explicit.
 - [ ] Confirm the release branch has been merged through the protected-branch workflow.
 
-Recommended local commands:
+Recommended local command:
 
 ```bash
 make release-check
+```
+
+Diagnostic fallback commands:
+
+```bash
 SKIP=no-commit-to-branch pre-commit run --all-files
 ruff check hooks tests
-pytest
+pytest -q tests
 ```
 
 ## Tagging
@@ -183,3 +188,5 @@ git push origin v1.2.6
 - [x] Add root Markdown table-of-contents guardrails.
 - [x] Add workflow-reference drift checks for release, workflow-map, and branch-protection docs.
 - [x] Add README and generated release-checklist documentation alignment checks.
+- [x] Add generated Markdown internal heading-anchor checks.
+- [x] Align release-checklist local command guidance with `make release-check`.
