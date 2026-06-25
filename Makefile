@@ -111,6 +111,8 @@ endef
 # SECTION: PHONY TARGETS ==================================================== #
 
 
+##@ Utilities
+
 .PHONY: check
 check: doclint lint typecheck test ## Run docstring lint, code lint, type-check, and tests
 
@@ -121,11 +123,12 @@ check-pre-push: doclint lint typecheck test ## Run the fast mandatory local pre-
 check-ci-local: release-check doclint typecheck ## Run the heavier opt-in local CI-parity workflow
 
 .PHONY: clean
-clean: ## Remove local build, test, and cache artifacts
+clean: ## Remove local build artifacts and caches
 	@find . -name '__pycache__' -type d -prune -exec rm -rf {} + 2>/dev/null || true
 	@find . -name '.pytest_cache' -type d -prune -exec rm -rf {} + 2>/dev/null || true
 	@find . -name '.ruff_cache' -type d -prune -exec rm -rf {} + 2>/dev/null || true
 	@rm -rf "$(PKG_DIR)/.mypy_cache" "$(PKG_DIR)/build" "$(PKG_DIR)/dist" "$(PKG_DIR)"/*.egg-info
+	@rm -rf "$(PKG_DIR)"/src/*.egg-info 2>/dev/null || true
 	@$(call ECHO_OK,Cleaned artifacts)
 
 .PHONY: clean-venv
@@ -157,8 +160,10 @@ fmt: fix ## Format Python files with autopep8 normalization
 	fi
 
 .PHONY: help
-help: ## Show available targets
-	@awk 'BEGIN {FS = ":.*## "} /^[a-zA-Z0-9_.-]+:.*## / {printf "%-16s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+help: ## Show help and available targets
+	@awk 'BEGIN {FS=":.*##"; printf "\nUsage: make \033[36m<TARGET>\033[0m\n\nTargets:\n"} \
+	/^[a-zA-Z0-9_.-]+:.*##/ { printf "  \033[36m%-18s\033[0m %s\n", $$1, $$2 } \
+	/^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0,5) } ' $(MAKEFILE_LIST)
 
 .PHONY: install
 install: venv ## Install the package in editable mode
