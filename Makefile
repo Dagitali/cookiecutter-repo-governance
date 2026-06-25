@@ -6,9 +6,9 @@
 # Local automation for maintaining this Cookiecutter template.
 #
 # Responsibilities
-# - Provide concise entry points for installing development dependencies.
-# - Run the same lint, test, and template-validation checks used by CI.
-# - Render a disposable sample project for manual inspection.
+# - Provide concise entry points for installing local development dependencies.
+# - Run local lint, test, and template-validation checks aligned with CI.
+# - Render a disposable sample project for local inspection.
 # - Remove local Python and Cookiecutter build/test artifacts.
 #
 # Maintainer Notes
@@ -114,7 +114,7 @@ endef
 ##@ Utilities
 
 .PHONY: check
-check: doclint lint typecheck test ## Run docstring lint, code lint, type-check, and tests
+check: doclint lint typecheck test ## Run local docstring lint, code lint, type-check, and tests
 
 .PHONY: check-pre-push
 check-pre-push: doclint lint typecheck test ## Run the fast mandatory local pre-push guardrails
@@ -179,13 +179,13 @@ lint: dev ## Run Python lint and formatting-drift checks
 	fi
 
 .PHONY: release-check
-release-check: ## Run release-readiness checks without creating a virtual environment
+release-check: ## Run local release-readiness checks without creating a virtual environment
 	SKIP=no-commit-to-branch pre-commit run --all-files
 	ruff check .
 	pytest -q -m "$(TEST_MARK_EXPRESSION)" tests
 
 .PHONY: render
-render: dev ## Render a sample project into RENDER_OUTPUT_DIR
+render: dev ## Render a sample project into RENDER_OUTPUT_DIR for local inspection
 	rm -rf "$(RENDER_OUTPUT_DIR)"
 	$(PYTHON) -m cookiecutter . --no-input --output-dir "$(RENDER_OUTPUT_DIR)"
 
